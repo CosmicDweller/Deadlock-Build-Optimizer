@@ -65,6 +65,13 @@ export interface Item {
   cost: number
   stats: Partial<Record<StatKey, number>>
   description: string
+  /**
+   * Item ids this one upgrades from. The component is consumed, so a build
+   * can never hold an item together with one of its components (or their
+   * components in turn). Ids absent from ITEMS are simply unselectable and
+   * cannot conflict.
+   */
+  components: string[]
   /** WebP icon URL on the official Deadlock CDN; may be empty. */
   image: string
 }

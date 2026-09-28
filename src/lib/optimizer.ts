@@ -1,5 +1,6 @@
 import type { BuildResult, Item, ItemCategory, StatKey } from '../types'
 import { INVESTMENT, investmentBonus } from '../data/investmentBonuses'
+import { buildFamilies, crossCategoryConflicts } from './upgradePaths'
 
 // Real builds cap at 12 items TOTAL, shared across categories — match data
 // shows single-category counts as high as 9-10, so there's no meaningful
@@ -124,10 +125,21 @@ function solveCategory(
   scoring: ScoringModel,
   category: ItemCategory,
 ): CategorySolution {
-  const n = items.length
-  const itemCost = items.map((it) => Math.ceil(it.cost / BUCKET_SIZE))
-  const itemScore = items.map((it) => scoring.scoreItem(it))
+  // Items are grouped into upgrade families, and a family contributes one
+  // legal combination rather than each member independently. That is what
+  // stops the search returning a build holding both an item and the
+  // component it was upgraded from, which is impossible in game.
+  const families = buildFamilies(items)
+  const scored = families.map((family) =>
+    family.options.map((option) => ({
+      items: option.items,
+      count: option.count,
+      bucket: Math.ceil(option.cost / BUCKET_SIZE),
+      score: option.items.reduce((sum, it) => sum + scoring.scoreItem(it), 0),
+    })),
+  )
 
+  const n = scored.length
   const dp: number[][][] = new Array(n + 1)
   dp[0] = Array.from({ length: maxSlots + 1 }, () => new Array(maxBucket + 1).fill(NEG))
   dp[0][0][0] = 0
@@ -135,14 +147,15 @@ function solveCategory(
   for (let i = 0; i < n; i++) {
     const prev = dp[i]
     const cur = prev.map((row) => row.slice())
-    const cost = itemCost[i]
-    const sc = itemScore[i]
-    for (let k = 1; k <= maxSlots; k++) {
-      for (let c = cost; c <= maxBucket; c++) {
-        const candidate = prev[k - 1][c - cost]
-        if (candidate !== NEG) {
-          const val = candidate + sc
-          if (val > cur[k][c]) cur[k][c] = val
+    for (const option of scored[i]) {
+      if (option.count === 0) continue // the "take nothing" option is the copy
+      for (let k = option.count; k <= maxSlots; k++) {
+        for (let c = option.bucket; c <= maxBucket; c++) {
+          const candidate = prev[k - option.count][c - option.bucket]
+          if (candidate !== NEG) {
+            const val = candidate + option.score
+            if (val > cur[k][c]) cur[k][c] = val
+          }
         }
       }
     }
@@ -163,11 +176,21 @@ function solveCategory(
     let kk = slots
     let cc = bucket
     const chosen: Item[] = []
-    for (let i = n; i > 0 && kk > 0; i--) {
+    for (let i = n; i > 0; i--) {
       if (dp[i][kk][cc] === dp[i - 1][kk][cc]) continue
-      chosen.push(items[i - 1])
-      cc -= itemCost[i - 1]
-      kk -= 1
+      // This family contributed something; find which combination it was.
+      const option = scored[i - 1].find(
+        (o) =>
+          o.count > 0 &&
+          o.count <= kk &&
+          o.bucket <= cc &&
+          dp[i - 1][kk - o.count][cc - o.bucket] !== NEG &&
+          dp[i - 1][kk - o.count][cc - o.bucket] + o.score === dp[i][kk][cc],
+      )
+      if (!option) continue
+      chosen.push(...option.items)
+      kk -= option.count
+      cc -= option.bucket
     }
     return chosen
   }
@@ -214,11 +237,43 @@ function mergeTables(a: number[][], b: number[][], maxSlots: number, maxBucket: 
   return { table, splitA }
 }
 
+/**
+ * Five upgrade paths cross category lines (Shadow Weave is a weapon item
+ * built from the vitality item Sprint Boots, for instance). The per-category
+ * search can't see those, so they're resolved afterwards by branching: drop
+ * one side, drop the other, keep whichever scores better. Depth is bounded
+ * by the handful of such pairs, and in practice a build trips at most one.
+ */
+const MAX_CROSS_CATEGORY_DEPTH = 5
+
 export function optimizeBuild(
   allItems: Item[],
   scoring: ScoringModel,
   budget: number,
   maxSlots = MAX_SLOTS,
+): BuildResult {
+  const crossCategory = crossCategoryConflicts(allItems)
+
+  const resolve = (pool: Item[], depth: number): BuildResult => {
+    const result = solveOnce(pool, scoring, budget, maxSlots)
+    if (depth >= MAX_CROSS_CATEGORY_DEPTH) return result
+    const ids = new Set(result.chosenItems.map((item) => item.id))
+    const clash = crossCategory.find(([parent, comp]) => ids.has(parent) && ids.has(comp))
+    if (!clash) return result
+    const [parent, component] = clash
+    const withoutParent = resolve(pool.filter((i) => i.id !== parent), depth + 1)
+    const withoutComponent = resolve(pool.filter((i) => i.id !== component), depth + 1)
+    return withoutParent.score >= withoutComponent.score ? withoutParent : withoutComponent
+  }
+
+  return resolve(allItems, 0)
+}
+
+function solveOnce(
+  allItems: Item[],
+  scoring: ScoringModel,
+  budget: number,
+  maxSlots: number,
 ): BuildResult {
   const maxBucket = Math.max(0, Math.floor(budget / BUCKET_SIZE))
 

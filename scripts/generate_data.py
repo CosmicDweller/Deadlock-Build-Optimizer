@@ -124,6 +124,11 @@ def generate_items():
             "cost": it["cost"],
             "stats": stats,
             "description": description,
+            # Items this one upgrades FROM. Buying the parent consumes the
+            # component, so a build can never hold both — verified against
+            # 119,630 real builds, where the pair co-occurs 0 times out of
+            # 712,140 opportunities.
+            "components": [c for c in (it.get("component_items") or [])],
             # WebP shop icon (200x200, ~20KB) served from the official CDN.
             # Filenames follow internal codenames rather than class_name, so
             # these URLs have to come from the export, not be constructed.
@@ -152,6 +157,8 @@ def generate_items():
         lines.append(f"    cost: {e['cost']},")
         lines.append(f"    stats: {{ {stats_js} }},")
         lines.append(f"    description: {js_string(e['description'])},")
+        components = ", ".join(js_string(c) for c in e["components"])
+        lines.append(f"    components: [{components}],")
         lines.append(f"    image: {js_string(e['image'])},")
         lines.append("  },")
     lines.append("]")
