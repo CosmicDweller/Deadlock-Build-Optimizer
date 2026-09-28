@@ -1,6 +1,7 @@
 import type { HeroArchetype, Item, ItemCategory } from '../types'
 import type { ScoringModel } from './optimizer'
 import { metaScore } from './heroMeta'
+import type { SkillBracket } from './heroMeta'
 import rawLearnedValues from '../data/learnedValues.json'
 
 /**
@@ -64,6 +65,7 @@ export function learnedItemValue(
   weights: ObjectiveWeights,
   heroId: string | null,
   metaWeight = 0,
+  bracket: SkillBracket = 'all',
 ): number {
   const base = LEARNED.items[item.id]
   const adjustments = heroId ? LEARNED.heroAdjustments[heroId]?.[item.id] : undefined
@@ -81,7 +83,7 @@ export function learnedItemValue(
   }
   // Pick-rate lift is z-scored on export, so it lands on the same scale as
   // the performance coefficients and this is a like-for-like blend.
-  if (metaWeight) total += metaScore(heroId, item.id) * metaWeight
+  if (metaWeight) total += metaScore(heroId, item.id, bracket) * metaWeight
   return total
 }
 
@@ -91,6 +93,7 @@ export function learnedItemBreakdown(
   weights: ObjectiveWeights,
   heroId: string | null,
   metaWeight = 0,
+  bracket: SkillBracket = 'all',
 ): { target: string; label: string; value: number }[] {
   const base = LEARNED.items[item.id]
   const adjustments = heroId ? LEARNED.heroAdjustments[heroId]?.[item.id] : undefined
@@ -109,7 +112,7 @@ export function learnedItemBreakdown(
   )
 
   if (metaWeight) {
-    const value = metaScore(heroId, item.id) * metaWeight
+    const value = metaScore(heroId, item.id, bracket) * metaWeight
     if (value !== 0) entries.push({ target: 'meta', label: 'Meta', value })
   }
   return entries
@@ -119,9 +122,10 @@ export function createLearnedScoring(
   weights: ObjectiveWeights,
   heroId: string | null,
   metaWeight = 0,
+  bracket: SkillBracket = 'all',
 ): ScoringModel {
   return {
-    scoreItem: (item) => learnedItemValue(item, weights, heroId, metaWeight),
+    scoreItem: (item) => learnedItemValue(item, weights, heroId, metaWeight, bracket),
     // The learned coefficients already include whatever the investment
     // bonus contributed — players who crossed a threshold had the bonus
     // active when their end-of-match stats were recorded. Adding our own

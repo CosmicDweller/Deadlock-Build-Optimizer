@@ -53,11 +53,37 @@ MAX_HERO_LEVEL = 36
 # out fast, because that is roughly when games end.
 CURVE_MINUTES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36]
 MIN_CURVE_SAMPLES = 2000
-# Minute marks the progression view plans around: laning, mid, late.
-PHASE_MINUTES = [10, 22, 36]
+# Minute marks the progression view plans around. Only the early phases
+# need these: the late phase is a full optimization against the endgame
+# meta score, so a 36-minute table would never be read.
+PHASE_MINUTES = [10, 22]
 MIN_PHASE_SAMPLES = 100
 # Counter-pick thresholds. Pooled across the buying hero, so samples are
 # large; these filters keep the list to picks worth acting on.
+# Skill brackets, by the match's average_badge. Nested rather than
+# disjoint, so a top-bracket game also counts toward high and all — that
+# keeps each bracket's own sample as large as it can be.
+#
+# They build differently enough to matter: against sub-40 lobbies, 90+
+# players take Dispel Magic 10 points more often, Slowing Hex twice as
+# often and Counterspell twice as often, while Boundless Spirit drops 16
+# points and Transcendent Cooldown 12. Strong players buy actives,
+# utility and counters; weaker ones stack raw stats. Pooling everything
+# averages toward the latter, because low lobbies are the bigger sample.
+#
+# 70+ keeps all 38 heroes above 400 games; 90+ is purer but leaves three
+# heroes under 300, so its per-hero numbers are thinner.
+BRACKETS = [("all", 0), ("high", 70), ("top", 90)]
+
+
+def bracket_names() -> list[str]:
+    return [name for name, _ in BRACKETS]
+
+
+def brackets_for(badge: float) -> list[str]:
+    return [name for name, floor in BRACKETS if badge >= floor]
+
+
 COUNTER_MIN_GAMES = 400
 COUNTER_MIN_LIFT = 1.2
 COUNTER_MIN_RATE = 0.03
@@ -104,7 +130,7 @@ def level_by_net_worth(df) -> list[dict]:
     return out
 
 
-def soul_curve(matches_path=None) -> list[dict]:
+def soul_curve(matches_path=None) -> dict:
     """Median cumulative item spend, and item count, by minute.
 
     Drives the phase budgets in the progression view. Taken from purchase
@@ -121,11 +147,14 @@ def soul_curve(matches_path=None) -> list[dict]:
     from deadlock_ml.dataset import iter_matches
 
     shop = _load_items()
-    samples: dict[int, list[tuple[int, int]]] = {m: [] for m in CURVE_MINUTES}
+    samples: dict = {
+        b: {m: [] for m in CURVE_MINUTES} for b in bracket_names()
+    }
     for match in iter_matches() if matches_path is None else iter_matches(matches_path):
         if match.get("not_scored"):
             continue
         duration = match.get("duration_s", 0)
+        in_brackets = brackets_for(match.get("average_badge") or 0)
         for player in match["players"]:
             if player.get("abandon_match_time_s"):
                 continue
@@ -148,23 +177,27 @@ def soul_curve(matches_path=None) -> list[dict]:
                 while index < len(timeline) and timeline[index][0] <= minute * 60:
                     spend += timeline[index][1]
                     index += 1
-                samples[minute].append((spend, index))
+                for b in in_brackets:
+                    samples[b][minute].append((spend, index))
 
-    curve = []
-    for minute in CURVE_MINUTES:
-        rows = samples[minute]
-        if len(rows) < MIN_CURVE_SAMPLES:
-            continue
-        spends = sorted(r[0] for r in rows)
-        counts = sorted(r[1] for r in rows)
-        mid = len(rows) // 2
-        curve.append({
-            "minute": minute,
-            "souls": int(spends[mid]),
-            "items": int(counts[mid]),
-            "samples": len(rows),
-        })
-    return curve
+    out: dict = {}
+    for b in bracket_names():
+        curve = []
+        for minute in CURVE_MINUTES:
+            rows = samples[b][minute]
+            if len(rows) < MIN_CURVE_SAMPLES:
+                continue
+            spends = sorted(r[0] for r in rows)
+            counts = sorted(r[1] for r in rows)
+            mid = len(rows) // 2
+            curve.append({
+                "minute": minute,
+                "souls": int(spends[mid]),
+                "items": int(counts[mid]),
+                "samples": len(rows),
+            })
+        out[b] = curve
+    return out
 
 
 def phase_pick_rates(matches_path=None) -> dict:
@@ -189,13 +222,18 @@ def phase_pick_rates(matches_path=None) -> dict:
     heroes = _load_heroes()
     slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
 
-    held: dict = {m: defaultdict(Counter) for m in PHASE_MINUTES}
-    seen_counts: dict = {m: Counter() for m in PHASE_MINUTES}
+    held: dict = {
+        b: {m: defaultdict(Counter) for m in PHASE_MINUTES} for b in bracket_names()
+    }
+    seen_counts: dict = {
+        b: {m: Counter() for m in PHASE_MINUTES} for b in bracket_names()
+    }
 
     for match in iter_matches() if matches_path is None else iter_matches(matches_path):
         if match.get("not_scored"):
             continue
         duration = match.get("duration_s", 0)
+        in_brackets = brackets_for(match.get("average_badge") or 0)
         for player in match["players"]:
             if player.get("abandon_match_time_s"):
                 continue
@@ -206,37 +244,44 @@ def phase_pick_rates(matches_path=None) -> dict:
             for minute in PHASE_MINUTES:
                 if minute * 60 > duration:
                     continue
-                seen_counts[minute][hero_id] += 1
                 owned = {
                     e["item_id"] for e in entries
                     if e["game_time_s"] <= minute * 60
                     and (not e.get("sold_time_s") or e["sold_time_s"] > minute * 60)
                 }
-                for item_id in owned:
-                    held[minute][hero_id][item_id] += 1
+                for b in in_brackets:
+                    seen_counts[b][minute][hero_id] += 1
+                    for item_id in owned:
+                        held[b][minute][hero_id][item_id] += 1
 
-    raw: dict[tuple[int, str, str], float] = {}
-    for minute in PHASE_MINUTES:
-        for hero_id, games in seen_counts[minute].items():
-            if games < MIN_PHASE_SAMPLES:
-                continue
-            for item_id, item in shop.items():
-                rate = (held[minute][hero_id].get(item_id, 0) + SMOOTHING) / (games + 2 * SMOOTHING)
-                raw[(minute, slug_of[hero_id], item.class_name)] = math.log(rate / (1 - rate))
+    result: dict = {}
+    for b in bracket_names():
+        raw: dict[tuple[int, str, str], float] = {}
+        for minute in PHASE_MINUTES:
+            for hero_id, games in seen_counts[b][minute].items():
+                if games < MIN_PHASE_SAMPLES:
+                    continue
+                for item_id, item in shop.items():
+                    rate = (held[b][minute][hero_id].get(item_id, 0) + SMOOTHING) / (
+                        games + 2 * SMOOTHING
+                    )
+                    raw[(minute, slug_of[hero_id], item.class_name)] = math.log(rate / (1 - rate))
 
-    if not raw:
-        return {}
-    values = list(raw.values())
-    mean = sum(values) / len(values)
-    sd = math.sqrt(sum((v - mean) ** 2 for v in values) / len(values)) or 1.0
-
-    out: dict = {}
-    for (minute, slug, item_class), value in raw.items():
-        z = (value - mean) / sd
-        if abs(z) < SCORE_CUTOFF:
+        if not raw:
+            result[b] = {}
             continue
-        out.setdefault(str(minute), {}).setdefault(slug, {})[item_class] = round(z, 3)
-    return out
+        values = list(raw.values())
+        mean = sum(values) / len(values)
+        sd = math.sqrt(sum((v - mean) ** 2 for v in values) / len(values)) or 1.0
+
+        out: dict = {}
+        for (minute, slug, item_class), value in raw.items():
+            z = (value - mean) / sd
+            if abs(z) < SCORE_CUTOFF:
+                continue
+            out.setdefault(str(minute), {}).setdefault(slug, {})[item_class] = round(z, 3)
+        result[b] = out
+    return result
 
 
 def counter_picks(matches_path=None) -> dict:
@@ -264,14 +309,15 @@ def counter_picks(matches_path=None) -> dict:
     heroes = _load_heroes()
     slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
 
-    bought_with: Counter = Counter()
-    bought_without: Counter = Counter()
-    games_with: Counter = Counter()
-    games_without: Counter = Counter()
+    bought_with: dict = {b: Counter() for b in bracket_names()}
+    bought_without: dict = {b: Counter() for b in bracket_names()}
+    games_with: dict = {b: Counter() for b in bracket_names()}
+    games_without: dict = {b: Counter() for b in bracket_names()}
 
     for match in iter_matches() if matches_path is None else iter_matches(matches_path):
         if match.get("not_scored"):
             continue
+        in_brackets = brackets_for(match.get("average_badge") or 0)
         by_team: dict = defaultdict(list)
         for player in match["players"]:
             by_team[player["team"]].append(player)
@@ -290,51 +336,44 @@ def counter_picks(matches_path=None) -> dict:
                 }
                 for enemy_id in slug_of:
                     present = enemy_id in enemies
-                    if present:
-                        games_with[enemy_id] += 1
-                    else:
-                        games_without[enemy_id] += 1
-                    for item_id in owned:
+                    for b in in_brackets:
                         if present:
-                            bought_with[(enemy_id, item_id)] += 1
+                            games_with[b][enemy_id] += 1
                         else:
-                            bought_without[(enemy_id, item_id)] += 1
+                            games_without[b][enemy_id] += 1
+                        for item_id in owned:
+                            if present:
+                                bought_with[b][(enemy_id, item_id)] += 1
+                            else:
+                                bought_without[b][(enemy_id, item_id)] += 1
 
-    out: dict = {}
-    for (enemy_id, item_id), count in bought_with.items():
-        n_with = games_with[enemy_id]
-        n_without = games_without[enemy_id]
-        if n_with < COUNTER_MIN_GAMES or n_without < COUNTER_MIN_GAMES:
-            continue
-        rate_with = count / n_with
-        rate_without = bought_without.get((enemy_id, item_id), 0) / n_without
-        if rate_with < COUNTER_MIN_RATE or rate_without <= 0:
-            continue
-        lift = rate_with / rate_without
-        if lift < COUNTER_MIN_LIFT:
-            continue
-        out.setdefault(slug_of[enemy_id], {})[shop[item_id].class_name] = {
-            "lift": round(lift, 2),
-            "with": round(rate_with, 3),
-            "without": round(rate_without, 3),
-            "games": n_with,
-        }
-    return out
+    result: dict = {}
+    for b in bracket_names():
+        out: dict = {}
+        for (enemy_id, item_id), count in bought_with[b].items():
+            n_with = games_with[b][enemy_id]
+            n_without = games_without[b][enemy_id]
+            if n_with < COUNTER_MIN_GAMES or n_without < COUNTER_MIN_GAMES:
+                continue
+            rate_with = count / n_with
+            rate_without = bought_without[b].get((enemy_id, item_id), 0) / n_without
+            if rate_with < COUNTER_MIN_RATE or rate_without <= 0:
+                continue
+            lift = rate_with / rate_without
+            if lift < COUNTER_MIN_LIFT:
+                continue
+            out.setdefault(slug_of[enemy_id], {})[shop[item_id].class_name] = {
+                "lift": round(lift, 2),
+                "with": round(rate_with, 3),
+                "without": round(rate_without, 3),
+                "games": n_with,
+            }
+        result[b] = out
+    return result
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--min-games", type=int, default=10,
-                        help="minimum purchases before an item shows in the table")
-    parser.add_argument("--top", type=int, default=12,
-                        help="affinity rows to keep per hero")
-    args = parser.parse_args()
-
-    df = load_player_table()
-    items = load_items()
-    heroes = load_heroes()
-    slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
-
+def hero_tables(df, items, heroes, slug_of, min_games: int, top: int, with_archetypes: bool):
+    """Per-hero meta score and affinity table for one slice of the data."""
     raw_scores: dict[tuple[str, str], float] = {}
     affinity_out: dict[str, list] = {}
     archetypes_out: dict[str, dict] = {}
@@ -356,7 +395,7 @@ def main() -> None:
             # the log finite for items at 0% or 100%.
             raw_scores[(slug, item.class_name)] = math.log(hero_rate / (1 - hero_rate))
 
-        table = hero_item_affinity(df, hero_id, min_games=args.min_games)
+        table = hero_item_affinity(df, hero_id, min_games=min_games)
         if len(table):
             affinity_out[slug] = [
                 {
@@ -371,26 +410,27 @@ def main() -> None:
                     "winRate": round(float(r["win_rate"]), 3),
                     "significant": bool(r["significant"]),
                 }
-                for _, r in table.head(args.top).iterrows()
+                for _, r in table.head(top).iterrows()
             ]
 
-        result = find_archetypes(df, hero_id)
-        if result is not None and result.separated:
-            archetypes_out[slug] = {
-                "silhouette": round(result.silhouette, 3),
-                "clusters": [
-                    {
-                        "size": c.size,
-                        "share": round(c.size / result.hero_games, 3),
-                        "winRate": round(c.win_rate, 3),
-                        "signature": [
-                            {"name": n, "inRate": round(i, 3), "outRate": round(o, 3)}
-                            for n, i, o in c.signature[:5]
-                        ],
-                    }
-                    for c in result.clusters
-                ],
-            }
+        if with_archetypes:
+            result = find_archetypes(df, hero_id)
+            if result is not None and result.separated:
+                archetypes_out[slug] = {
+                    "silhouette": round(result.silhouette, 3),
+                    "clusters": [
+                        {
+                            "size": c.size,
+                            "share": round(c.size / result.hero_games, 3),
+                            "winRate": round(c.win_rate, 3),
+                            "signature": [
+                                {"name": n, "inRate": round(i, 3), "outRate": round(o, 3)}
+                                for n, i, o in c.signature[:5]
+                            ],
+                        }
+                        for c in result.clusters
+                    ],
+                }
 
     # Z-normalize so a meta weight of 1 is comparable to one standard
     # deviation of a learned performance objective.
@@ -405,33 +445,70 @@ def main() -> None:
             continue
         meta_score.setdefault(slug, {})[item_class] = round(z, 3)
 
+    return meta_score, affinity_out, archetypes_out
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--min-games", type=int, default=10,
+                        help="minimum purchases before an item shows in the table")
+    parser.add_argument("--top", type=int, default=12,
+                        help="affinity rows to keep per hero")
+    args = parser.parse_args()
+
+    df = load_player_table()
+    items = load_items()
+    heroes = load_heroes()
+    slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
+
+    # One streaming pass each; every bracket is accumulated inside it.
+    curves = soul_curve()
+    phases = phase_pick_rates()
+    counters = counter_picks()
+
+    brackets: dict = {}
+    for name, floor in BRACKETS:
+        slice_df = df if floor <= 0 else df[df["average_badge"] >= floor]
+        # Archetype clustering only for the full sample; the narrower
+        # brackets don't have the games to separate builds reliably.
+        meta_score, affinity, archetypes = hero_tables(
+            slice_df, items, heroes, slug_of,
+            args.min_games, args.top, with_archetypes=(floor <= 0),
+        )
+        brackets[name] = {
+            "minBadge": floor,
+            "players": int(len(slice_df)),
+            "heroGames": {
+                slug_of[h]: int(n)
+                for h, n in slice_df.groupby("hero_id").size().items()
+                if h in slug_of
+            },
+            "levelByNetWorth": level_by_net_worth(slice_df),
+            "soulCurve": curves.get(name, []),
+            "affinity": affinity,
+            "archetypes": archetypes,
+            "metaScore": meta_score,
+            "phaseMeta": phases.get(name, {}),
+            "counterPicks": counters.get(name, {}),
+        }
+
     payload = {
         "generated": date.today().isoformat(),
         "nMatches": int(df["match_id"].nunique()),
-        "heroGames": {slug_of[h]: int(n) for h, n in
-                      df.groupby("hero_id").size().items() if h in slug_of},
-        "levelByNetWorth": level_by_net_worth(df),
-        "soulCurve": soul_curve(),
-        "phaseMeta": phase_pick_rates(),
-        "counterPicks": counter_picks(),
-        "affinity": affinity_out,
-        "archetypes": archetypes_out,
-        "metaScore": meta_score,
+        "defaultBracket": "all",
+        "brackets": brackets,
     }
 
     OUT_PATH.write_text(json.dumps(payload, separators=(",", ":")))
     kb = OUT_PATH.stat().st_size / 1024
-    n_scores = sum(len(v) for v in meta_score.values())
     print(f"Wrote {OUT_PATH} ({kb:.0f} KB)")
-    print(f"  affinity tables: {len(affinity_out)} heroes")
-    print(f"  archetypes (well-separated only): {len(archetypes_out)} heroes")
-    print(f"  meta scores: {n_scores:,} hero/item pairs")
-    print(f"  level curve: {len(payload['levelByNetWorth'])} levels")
-    print(f"  soul curve: {len(payload['soulCurve'])} minute marks")
-    n_phase = sum(len(i) for m in payload["phaseMeta"].values() for i in m.values())
-    print(f"  phase meta: {n_phase:,} entries over {len(payload['phaseMeta'])} phases")
-    n_ctr = sum(len(v) for v in payload["counterPicks"].values())
-    print(f"  counter picks: {n_ctr:,} pairings over {len(payload['counterPicks'])} enemies")
+    for name, data in brackets.items():
+        n_meta = sum(len(v) for v in data["metaScore"].values())
+        n_phase = sum(len(i) for m in data["phaseMeta"].values() for i in m.values())
+        n_ctr = sum(len(v) for v in data["counterPicks"].values())
+        print(f"  [{name}] badge>={data['minBadge']:>2}  players {data['players']:>7,}  "
+              f"meta {n_meta:>6,}  phase {n_phase:>6,}  counters {n_ctr:>4}  "
+              f"affinity {len(data['affinity']):>2}  archetypes {len(data['archetypes']):>2}")
 
 
 if __name__ == "__main__":

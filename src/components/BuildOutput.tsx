@@ -9,6 +9,7 @@ import type { ObjectiveWeights } from '../lib/learnedScoring'
 import { GameIcon } from './GameIcon'
 import { ProgressionView } from './ProgressionView'
 import { SituationalItems } from './SituationalItems'
+import type { SkillBracket } from '../lib/heroMeta'
 import type { Progression } from '../lib/progression'
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
   onViewChange: (view: BuildView) => void
   heroes: Hero[]
   enemyIds: string[]
+  bracket: SkillBracket
 }
 
 export type BuildView = 'final' | 'progression'
@@ -50,6 +52,7 @@ export function BuildOutput({
   onViewChange,
   heroes,
   enemyIds,
+  bracket,
 }: Props) {
   if (!result || !hero) {
     return (
@@ -161,10 +164,10 @@ export function BuildOutput({
               <ul className="item-list">
                 {items.map((item) => {
                   const value = learned
-                    ? learnedItemValue(item, objectives, heroId, metaWeight)
+                    ? learnedItemValue(item, objectives, heroId, metaWeight, bracket)
                     : 0
                   const breakdown = learned
-                    ? learnedItemBreakdown(item, objectives, heroId, metaWeight)
+                    ? learnedItemBreakdown(item, objectives, heroId, metaWeight, bracket)
                     : []
                   return (
                     <li className="item-card" key={item.id}>
@@ -217,6 +220,7 @@ export function BuildOutput({
         heroes={heroes}
         enemyIds={enemyIds}
         inBuild={new Set(result.chosenItems.map((i) => i.id))}
+        bracket={bracket}
       />
 
       <div className="totals-block">

@@ -1,5 +1,6 @@
 import { affinityFor, archetypesFor, heroGames } from '../lib/heroMeta'
 import type { Hero } from '../types'
+import type { SkillBracket } from '../lib/heroMeta'
 import { ITEMS } from '../data/items'
 import { GameIcon } from './GameIcon'
 
@@ -9,12 +10,13 @@ const IMAGE_BY_ITEM_ID: Record<string, string> = Object.fromEntries(
 
 interface Props {
   hero: Hero
+  bracket: SkillBracket
 }
 
-export function HeroMetaPanel({ hero }: Props) {
-  const affinity = affinityFor(hero.id)
-  const archetypes = archetypesFor(hero.id)
-  const games = heroGames(hero.id)
+export function HeroMetaPanel({ hero, bracket }: Props) {
+  const affinity = affinityFor(hero.id, bracket)
+  const archetypes = archetypesFor(hero.id, bracket)
+  const games = heroGames(hero.id, bracket)
 
   if (affinity.length === 0) {
     return (

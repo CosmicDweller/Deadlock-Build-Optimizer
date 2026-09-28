@@ -7,7 +7,8 @@ import {
   createLearnedScoring,
 } from './lib/learnedScoring'
 import type { ObjectiveWeights } from './lib/learnedScoring'
-import { levelForSouls } from './lib/heroMeta'
+import { SKILL_BRACKETS, bracketPlayers, levelForSouls } from './lib/heroMeta'
+import type { SkillBracket } from './lib/heroMeta'
 import type { Hero, ScoringMode, StatKey } from './types'
 import { HeroPicker } from './components/HeroPicker'
 import { StatWeightPanel } from './components/StatWeightPanel'
@@ -35,6 +36,7 @@ function App() {
   const [levelOverride, setLevelOverride] = useState<number | null>(null)
   const [view, setView] = useState<BuildView>('progression')
   const [enemyIds, setEnemyIds] = useState<string[]>([])
+  const [bracket, setBracket] = useState<SkillBracket>('all')
 
   function handleSelectHero(hero: Hero) {
     setSelectedHero(hero)
@@ -68,7 +70,7 @@ function App() {
     setMetaWeight(DEFAULT_META_WEIGHT)
   }
 
-  const level = levelOverride ?? levelForSouls(budget)
+  const level = levelOverride ?? levelForSouls(budget, bracket)
 
   const result = useMemo(() => {
     if (!selectedHero) return null
@@ -79,9 +81,9 @@ function App() {
     const scoring =
       mode === 'stats'
         ? createStatScoring(ITEMS, weights, referenceHealth)
-        : createLearnedScoring(objectives, selectedHero.id, metaWeight)
+        : createLearnedScoring(objectives, selectedHero.id, metaWeight, bracket)
     return optimizeBuild(ITEMS, scoring, budget)
-  }, [selectedHero, mode, weights, objectives, metaWeight, budget, level])
+  }, [selectedHero, mode, weights, objectives, metaWeight, budget, level, bracket])
 
   const progression = useMemo(() => {
     if (!selectedHero) return null
@@ -90,9 +92,9 @@ function App() {
     const scoring =
       mode === 'stats'
         ? createStatScoring(ITEMS, weights, referenceHealth)
-        : createLearnedScoring(objectives, selectedHero.id, metaWeight)
-    return buildProgression(ITEMS, scoring, budget, selectedHero.id, metaWeight)
-  }, [selectedHero, mode, weights, objectives, metaWeight, budget, level])
+        : createLearnedScoring(objectives, selectedHero.id, metaWeight, bracket)
+    return buildProgression(ITEMS, scoring, budget, selectedHero.id, metaWeight, bracket)
+  }, [selectedHero, mode, weights, objectives, metaWeight, budget, level, bracket])
 
   return (
     <div className="app-shell">
@@ -102,6 +104,26 @@ function App() {
           Pick a hero, set your priorities and soul budget, and get a suggested item build —
           scored either off item stats or off what items actually produced in real matches.
         </p>
+        <div className="bracket-bar">
+          <span className="bracket-label">Skill bracket</span>
+          <div className="mode-toggle bracket-toggle" role="tablist">
+            {SKILL_BRACKETS.map((b) => (
+              <button
+                key={b.key}
+                role="tab"
+                aria-selected={bracket === b.key}
+                className={`mode-button${bracket === b.key ? ' active' : ''}`}
+                onClick={() => setBracket(b.key)}
+                title={b.hint}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+          <span className="bracket-count">
+            {bracketPlayers(bracket).toLocaleString()} players
+          </span>
+        </div>
       </header>
 
       <main className="app-grid">
@@ -126,7 +148,7 @@ function App() {
               levelIsAuto={levelOverride === null}
               onLevelAuto={() => setLevelOverride(null)}
             />
-            <HeroMetaPanel hero={selectedHero} />
+            <HeroMetaPanel hero={selectedHero} bracket={bracket} />
             <EnemyTeamPicker
               heroes={HEROES}
               selected={enemyIds}
@@ -150,6 +172,7 @@ function App() {
           onViewChange={setView}
           heroes={HEROES}
           enemyIds={enemyIds}
+          bracket={bracket}
         />
       </main>
 

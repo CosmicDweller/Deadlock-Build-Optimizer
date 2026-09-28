@@ -1,7 +1,8 @@
 import type { Item } from '../types'
 import type { ScoringModel } from './optimizer'
 import { MAX_SLOTS, optimizeBuild } from './optimizer'
-import { HERO_META, phaseMetaScore } from './heroMeta'
+import { phaseMetaScore, soulCurve } from './heroMeta'
+import type { SkillBracket } from './heroMeta'
 
 /**
  * A build split into laning / mid / late, rather than one endgame snapshot.
@@ -73,8 +74,8 @@ export interface Progression {
 }
 
 /** Median cumulative spend at a minute mark, interpolated between samples. */
-export function soulsByMinute(minute: number): number {
-  const curve = HERO_META.soulCurve
+export function soulsByMinute(minute: number, bracket: SkillBracket = 'all'): number {
+  const curve = soulCurve(bracket)
   if (!curve.length) return 0
   if (minute <= curve[0].minute) return curve[0].souls
   for (let i = 1; i < curve.length; i++) {
@@ -92,10 +93,10 @@ export function soulsByMinute(minute: number): number {
  * Phase budgets scaled so the last phase equals the user's soul budget,
  * keeping the measured shape of the curve.
  */
-function phaseBudgets(budget: number): number[] {
-  const endSouls = soulsByMinute(PHASES[PHASES.length - 1].minute) || 1
+function phaseBudgets(budget: number, bracket: SkillBracket): number[] {
+  const endSouls = soulsByMinute(PHASES[PHASES.length - 1].minute, bracket) || 1
   return PHASES.map((phase) =>
-    Math.round((soulsByMinute(phase.minute) / endSouls) * budget),
+    Math.round((soulsByMinute(phase.minute, bracket) / endSouls) * budget),
   )
 }
 
@@ -137,9 +138,10 @@ export function buildProgression(
   heroId: string | null,
   /** Weight on "what this hero holds at this minute", matching the meta slider. */
   metaWeight: number,
+  bracket: SkillBracket = 'all',
   maxSlots?: number,
 ): Progression {
-  const budgets = phaseBudgets(budget)
+  const budgets = phaseBudgets(budget, bracket)
   const final = optimizeBuild(allItems, scoring, budget, maxSlots)
   const finalIds = new Set(final.chosenItems.map((i) => i.id))
   const upgradeTarget = componentIds(final.chosenItems)
@@ -152,7 +154,7 @@ export function buildProgression(
     ...scoring,
     scoreItem: (item) => {
       const base = scoring.scoreItem(item)
-      const phaseMeta = phaseMetaScore(minute, heroId, item.id) * metaWeight
+      const phaseMeta = phaseMetaScore(minute, heroId, item.id, bracket) * metaWeight
       const carries = finalIds.has(item.id) || upgradeTarget.has(item.id)
       return base + phaseMeta + (carries ? CONTINUITY_BONUS : 0)
     },
@@ -172,6 +174,7 @@ export function buildProgression(
     })),
     budget,
     slotCap,
+    bracket,
   )
   const phaseSets: Item[][] = [...walked.map((w) => w.owned), final.chosenItems]
   const consumedByPhase = [...walked.map((w) => w.consumedInPhase), []]
@@ -271,9 +274,10 @@ function walkSoulCurve(
   stops: WalkStop[],
   budget: number,
   slotCap: number,
+  bracket: SkillBracket,
 ): WalkSnapshot[] {
   const byId = new Map(allItems.map((i) => [i.id, i]))
-  const endSouls = soulsByMinute(PHASES[PHASES.length - 1].minute) || 1
+  const endSouls = soulsByMinute(PHASES[PHASES.length - 1].minute, bracket) || 1
   const scale = budget / endSouls
 
   let owned: Item[] = []
@@ -284,7 +288,7 @@ function walkSoulCurve(
     const consumedInPhase: { item: Item; target: Item }[] = []
     // Every curve sample up to this stop, so souls trickle in rather than
     // landing all at once at the phase boundary.
-    const steps = HERO_META.soulCurve
+    const steps = soulCurve(bracket)
       .filter((point) => point.minute >= WALK_START_MINUTE && point.minute <= stop.minute)
       .map((point) => Math.round(point.souls * scale))
     if (!steps.length) steps.push(stop.budget)

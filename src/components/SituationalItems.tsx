@@ -1,5 +1,6 @@
 import type { Hero, Item } from '../types'
 import { counterSuggestions } from '../lib/heroMeta'
+import type { SkillBracket } from '../lib/heroMeta'
 import { GameIcon } from './GameIcon'
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
   enemyIds: string[]
   /** Items already in the recommended build, so they can be marked. */
   inBuild: Set<string>
+  bracket: SkillBracket
 }
 
 const MAX_SHOWN = 8
@@ -20,12 +22,12 @@ const MAX_SHOWN = 8
  * recommendation can't express, and real build guides treat these as an
  * optional group for the same reason.
  */
-export function SituationalItems({ items, heroes, enemyIds, inBuild }: Props) {
+export function SituationalItems({ items, heroes, enemyIds, inBuild, bracket }: Props) {
   if (enemyIds.length === 0) return null
 
   const byId = new Map(items.map((i) => [i.id, i]))
   const heroName = new Map(heroes.map((h) => [h.id, h.name]))
-  const suggestions = counterSuggestions(enemyIds)
+  const suggestions = counterSuggestions(enemyIds, bracket)
     .filter((s) => byId.has(s.itemId))
     .slice(0, MAX_SHOWN)
 
