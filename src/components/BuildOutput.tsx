@@ -4,6 +4,7 @@ import { INVESTMENT_BONUSES, INVESTMENT_THRESHOLD } from '../data/investmentBonu
 import { MAX_SLOTS } from '../lib/optimizer'
 import { learnedItemBreakdown, learnedItemValue } from '../lib/learnedScoring'
 import type { ObjectiveWeights } from '../lib/learnedScoring'
+import { GameIcon } from './GameIcon'
 
 interface Props {
   result: BuildResult | null
@@ -105,6 +106,7 @@ export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeig
                   return (
                     <li className="item-card" key={item.id}>
                       <div className="item-card-header">
+                        <GameIcon className="item-icon" src={item.image} alt="" />
                         <span className="item-name">{item.name}</span>
                         {learned && <span className="item-value">{value >= 0 ? '+' : ''}{value.toFixed(2)}</span>}
                         <span className="item-tier">T{item.tier}</span>

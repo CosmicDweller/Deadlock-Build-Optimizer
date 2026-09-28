@@ -1,5 +1,11 @@
 import { affinityFor, archetypesFor, heroGames } from '../lib/heroMeta'
 import type { Hero } from '../types'
+import { ITEMS } from '../data/items'
+import { GameIcon } from './GameIcon'
+
+const IMAGE_BY_ITEM_ID: Record<string, string> = Object.fromEntries(
+  ITEMS.map((item) => [item.id, item.image]),
+)
 
 interface Props {
   hero: Hero
@@ -39,6 +45,11 @@ export function HeroMetaPanel({ hero }: Props) {
             <span className={`affinity-lift category-${entry.category}`}>
               {entry.lift === null ? '∞' : `${entry.lift.toFixed(1)}×`}
             </span>
+            <GameIcon
+              className="affinity-icon"
+              src={IMAGE_BY_ITEM_ID[entry.item] ?? ''}
+              alt=""
+            />
             <span className="affinity-name">{entry.name}</span>
             <span className="affinity-rates">
               {(entry.pick * 100).toFixed(0)}% vs {(entry.others * 100).toFixed(0)}%

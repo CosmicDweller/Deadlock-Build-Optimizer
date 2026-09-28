@@ -65,6 +65,8 @@ export interface Item {
   cost: number
   stats: Partial<Record<StatKey, number>>
   description: string
+  /** WebP icon URL on the official Deadlock CDN; may be empty. */
+  image: string
 }
 
 export type HeroArchetype = 'bullet' | 'spirit' | 'hybrid' | 'vitality'
@@ -86,6 +88,8 @@ export interface Hero {
     moveSpeed: number
   }
   defaultWeights: Partial<Record<StatKey, number>>
+  /** WebP portrait URL on the official Deadlock CDN; may be empty. */
+  image: string
 }
 
 export interface BuildResult {

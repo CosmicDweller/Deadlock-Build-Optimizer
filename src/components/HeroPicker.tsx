@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Hero } from '../types'
 import { ARCHETYPE_LABELS } from '../types'
+import { GameIcon } from './GameIcon'
 
 interface Props {
   heroes: Hero[]
@@ -39,9 +40,12 @@ export function HeroPicker({ heroes, selectedId, onSelect }: Props) {
             onClick={() => onSelect(hero)}
             title={hero.role}
           >
-            <span className="hero-name">{hero.name}</span>
-            <span className={`hero-archetype archetype-${hero.archetype}`}>
-              {ARCHETYPE_LABELS[hero.archetype]}
+            <GameIcon className="hero-icon" src={hero.image} alt="" />
+            <span className="hero-tile-text">
+              <span className="hero-name">{hero.name}</span>
+              <span className={`hero-archetype archetype-${hero.archetype}`}>
+                {ARCHETYPE_LABELS[hero.archetype]}
+              </span>
             </span>
           </button>
         ))}

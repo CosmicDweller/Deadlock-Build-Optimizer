@@ -124,6 +124,10 @@ def generate_items():
             "cost": it["cost"],
             "stats": stats,
             "description": description,
+            # WebP shop icon (200x200, ~20KB) served from the official CDN.
+            # Filenames follow internal codenames rather than class_name, so
+            # these URLs have to come from the export, not be constructed.
+            "image": it.get("shop_image_webp") or it.get("shop_image") or "",
         })
 
     entries.sort(key=lambda e: (e["category"], e["tier"], e["cost"]))
@@ -148,6 +152,7 @@ def generate_items():
         lines.append(f"    cost: {e['cost']},")
         lines.append(f"    stats: {{ {stats_js} }},")
         lines.append(f"    description: {js_string(e['description'])},")
+        lines.append(f"    image: {js_string(e['image'])},")
         lines.append("  },")
     lines.append("]")
 
@@ -170,6 +175,7 @@ def generate_heroes():
         move_speed = starting.get("max_move_speed", {}).get("value", 6)
         role = (h.get("description") or {}).get("role") or ""
         hero_id = re.sub(r"^hero_", "", h["class_name"])
+        images = h.get("images") or {}
 
         entries.append({
             "id": hero_id,
@@ -179,6 +185,8 @@ def generate_heroes():
             "maxHealth": clean_number(max_health),
             "moveSpeed": clean_number(move_speed),
             "defaultWeights": DEFAULT_WEIGHTS_BY_ARCHETYPE[archetype],
+            # WebP portrait icon (128x128, ~12KB) from the official CDN.
+            "image": images.get("icon_image_small_webp") or images.get("icon_image_small") or "",
         })
 
     entries.sort(key=lambda e: e["name"])
@@ -202,6 +210,7 @@ def generate_heroes():
         lines.append(f"    archetype: {js_string(e['archetype'])},")
         lines.append(f"    baseStats: {{ maxHealth: {e['maxHealth']}, moveSpeed: {e['moveSpeed']} }},")
         lines.append(f"    defaultWeights: {{ {weights_js} }},")
+        lines.append(f"    image: {js_string(e['image'])},")
         lines.append("  },")
     lines.append("]")
 

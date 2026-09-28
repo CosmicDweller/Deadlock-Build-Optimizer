@@ -14,6 +14,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { spiritPower: 10 },
     description: "+10 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/extra_spirit.webp",
   },
   {
     id: "upgrade_mystic_regeneration",
@@ -23,6 +24,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { maxHealth: 50 },
     description: "+50 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/mystic_regen.webp",
   },
   {
     id: "upgrade_withering_whip",
@@ -32,6 +34,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { maxHealth: 60, moveSpeed: 0.5 },
     description: "+60 Max Health, +0.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/rusted_barrel.webp",
   },
   {
     id: "upgrade_goose_egg",
@@ -41,6 +44,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { healthRegen: 1, moveSpeed: 1 },
     description: "+1/s Health Regen, +1 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/goose_egg.webp",
   },
   {
     id: "upgrade_soaring_spirit",
@@ -50,6 +54,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 75, spiritPower: 18, healthRegen: 1.5, moveSpeed: 1 },
     description: "+75 Max Health, +18 Spirit Power, +1.5/s Health Regen, +1 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/improved_spirit.webp",
   },
   {
     id: "upgrade_bullet_resist_shredder",
@@ -59,6 +64,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletDamage: 9, bulletResist: 9 },
     description: "+9% Bullet Damage, +9% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/bullet_resist_shredder.webp",
   },
   {
     id: "upgrade_magic_vulnerability",
@@ -68,6 +74,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritResist: 8 },
     description: "+8% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/mystic_vulnerability.webp",
   },
   {
     id: "upgrade_magic_slow",
@@ -77,6 +84,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 50, moveSpeed: 0.75 },
     description: "+50 Max Health, +0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/mystic_slow.webp",
   },
   {
     id: "upgrade_magic_tempo",
@@ -86,6 +94,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { cooldownReduction: 18 },
     description: "+18% Cooldown Reduction",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/improved_cooldown.webp",
   },
   {
     id: "upgrade_containment",
@@ -95,6 +104,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { moveSpeed: 0.5 },
     description: "+0.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/slowing_hex.webp",
   },
   {
     id: "upgrade_spirit_sap",
@@ -104,6 +114,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 50 },
     description: "+50 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/spirit_sap.webp",
   },
   {
     id: "upgrade_arcane_surge",
@@ -113,6 +124,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritPower: 20 },
     description: "+20 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/arcane_surge.webp",
   },
   {
     id: "upgrade_cold_front",
@@ -122,6 +134,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritResist: 6 },
     description: "+6% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/cold_front.webp",
   },
   {
     id: "upgrade_suppressor",
@@ -131,6 +144,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletResist: 8, spiritPower: 6 },
     description: "+8% Bullet Resist, +6 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/suppressor.webp",
   },
   {
     id: "upgrade_quick_silver",
@@ -140,6 +154,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { fireRate: 10 },
     description: "+10% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/quicksilver_reload.webp",
   },
   {
     id: "upgrade_targeted_silence",
@@ -149,6 +164,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 50 },
     description: "+50 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/silence_glyph.webp",
   },
   {
     id: "upgrade_tech_range",
@@ -158,6 +174,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { spiritResist: 10 },
     description: "+10% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/greater_expansion.webp",
   },
   {
     id: "upgrade_magic_shock",
@@ -167,6 +184,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 50 },
     description: "+50 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/tankbuster.webp",
   },
   {
     id: "upgrade_cooldown_reduction",
@@ -176,6 +194,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { cooldownReduction: 20, healthRegen: 4 },
     description: "+20% Cooldown Reduction, +4/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/superior_cooldown.webp",
   },
   {
     id: "upgrade_greater_withering_whip",
@@ -185,6 +204,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 75, moveSpeed: 0.75 },
     description: "+75 Max Health, +0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/disarming_hex.webp",
   },
   {
     id: "upgrade_rupture",
@@ -194,6 +214,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 65, spiritPower: 8 },
     description: "+65 Max Health, +8 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/decay.webp",
   },
   {
     id: "upgrade_target_stun",
@@ -203,6 +224,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 75 },
     description: "+75 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/knockdown.webp",
   },
   {
     id: "upgrade_tech_damage_pulse",
@@ -212,6 +234,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 100 },
     description: "+100 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/torment_pulse.webp",
   },
   {
     id: "upgrade_imbued_duration_extender",
@@ -221,6 +244,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletResist: 8 },
     description: "+8% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/superior_duration.webp",
   },
   {
     id: "upgrade_spirit_snatch",
@@ -230,6 +254,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 75 },
     description: "+75 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/spirit_snatch.webp",
   },
   {
     id: "upgrade_resonant_healing",
@@ -239,6 +264,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 90, moveSpeed: 1.75 },
     description: "+90 Max Health, +1.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/radiant_regeneration.webp",
   },
   {
     id: "upgrade_magic_storm",
@@ -248,6 +274,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { moveSpeed: 1.75 },
     description: "+1.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/surge_of_power.webp",
   },
   {
     id: "upgrade_mystic_reverb",
@@ -257,6 +284,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { lifesteal: 8 },
     description: "+8% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/mystic_reverb.webp",
   },
   {
     id: "upgrade_escalating_exposure",
@@ -266,6 +294,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { spiritResist: 17 },
     description: "+17% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/escalating_exposure.webp",
   },
   {
     id: "upgrade_transcendent_cooldown",
@@ -275,6 +304,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { cooldownReduction: 25, healthRegen: 4 },
     description: "+25% Cooldown Reduction, +4/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/transcendent_cooldown.webp",
   },
   {
     id: "upgrade_focus_lens",
@@ -284,6 +314,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { fireRate: 10 },
     description: "+10% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/focus_lens.webp",
   },
   {
     id: "upgrade_discord",
@@ -293,6 +324,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 100, spiritResist: 40 },
     description: "+100 Max Health, +40% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/scourge.webp",
   },
   {
     id: "upgrade_aoe_root",
@@ -302,6 +334,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { moveSpeed: 0.75 },
     description: "+0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/vortex_web.webp",
   },
   {
     id: "upgrade_ability_refresher",
@@ -311,6 +344,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletResist: 15, spiritResist: 14 },
     description: "+15% Bullet Resist, +14% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/refresher.webp",
   },
   {
     id: "upgrade_ability_power_shard",
@@ -320,6 +354,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletResist: 5, spiritResist: 5 },
     description: "+5% Bullet Resist, +5% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/echo_shard.webp",
   },
   {
     id: "upgrade_arctic_blast",
@@ -329,6 +364,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { spiritResist: 10 },
     description: "+10% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/arctic_blast.webp",
   },
   {
     id: "upgrade_self_bubble",
@@ -338,6 +374,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { spiritResist: 30, moveSpeed: 3 },
     description: "+30% Spirit Resist, +3 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/ethereal_shift.webp",
   },
   {
     id: "upgrade_boundless_spirit",
@@ -347,6 +384,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 75, spiritPower: 30, healthRegen: 4 },
     description: "+75 Max Health, +30 Spirit Power, +4/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/boundless_spirit.webp",
   },
   {
     id: "upgrade_ethereal_bullets",
@@ -356,6 +394,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { fireRate: 22, spiritPower: 7 },
     description: "+22% Fire Rate, +7 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/mercurial_magnum.webp",
   },
   {
     id: "upgrade_magic_carpet",
@@ -365,6 +404,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 125, spiritPower: 14 },
     description: "+125 Max Health, +14 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/magic_carpet.webp",
   },
   {
     id: "upgrade_ultimate_burst",
@@ -374,6 +414,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 50, moveSpeed: 0.75 },
     description: "+50 Max Health, +0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/spirit/lightning_scroll.webp",
   },
   {
     id: "upgrade_shrink_ray",
@@ -383,6 +424,7 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { fireRate: 20, moveSpeed: 5 },
     description: "+20% Fire Rate, +5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/shrink_ray.webp",
   },
   {
     id: "upgrade_patrons_blessing",
@@ -392,6 +434,7 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { spiritPower: 40, cooldownReduction: 40 },
     description: "+40 Spirit Power, +40% Cooldown Reduction",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/patrons_blessing.webp",
   },
   {
     id: "upgrade_unstable_concoction",
@@ -401,6 +444,7 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { maxHealth: 3000, bulletDamage: 150, spiritPower: 150, moveSpeed: 10 },
     description: "+3000 Max Health, +150% Bullet Damage, +150 Spirit Power, +10 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/unstable_concoction.webp",
   },
   {
     id: "upgrade_melee_rebuttal",
@@ -410,6 +454,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { maxHealth: 75 },
     description: "+75 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/rebuttal.webp",
   },
   {
     id: "upgrade_health",
@@ -419,6 +464,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { maxHealth: 210 },
     description: "+210 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/extra_health.webp",
   },
   {
     id: "upgrade_sprint_booster",
@@ -428,6 +474,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { healthRegen: 2, moveSpeed: 2 },
     description: "+2/s Health Regen, +2 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/sprint_boots.webp",
   },
   {
     id: "upgrade_grit",
@@ -437,6 +484,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { healthRegen: 1 },
     description: "+1/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/grit.webp",
   },
   {
     id: "upgrade_health_stimpak",
@@ -446,6 +494,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { moveSpeed: 2 },
     description: "+2 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/healing_rite.webp",
   },
   {
     id: "upgrade_endurance",
@@ -455,6 +504,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { healthRegen: 4 },
     description: "+4/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/extra_regen.webp",
   },
   {
     id: "upgrade_vampire",
@@ -464,6 +514,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 90, bulletDamage: 6, lifesteal: 13 },
     description: "+90 Max Health, +6% Bullet Damage, +13% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/bullet_lifesteal.webp",
   },
   {
     id: "upgrade_debuff_reducer",
@@ -473,6 +524,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 90 },
     description: "+90 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/debuff_reducer.webp",
   },
   {
     id: "upgrade_healing_booster",
@@ -482,6 +534,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { healthRegen: 4 },
     description: "+4/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/healing_booster.webp",
   },
   {
     id: "upgrade_trophy_collector",
@@ -491,6 +544,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { healthRegen: 2, moveSpeed: 2 },
     description: "+2/s Health Regen, +2 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/trophy_collector.webp",
   },
   {
     id: "upgrade_cardio_calibrator",
@@ -500,6 +554,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { healthRegen: 2, moveSpeed: 2 },
     description: "+2/s Health Regen, +2 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/enduring_speed.webp",
   },
   {
     id: "upgrade_weapon_shielding",
@@ -509,6 +564,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletResist: 18, healthRegen: 2.5 },
     description: "+18% Bullet Resist, +2.5/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/weapon_shielding.webp",
   },
   {
     id: "upgrade_spirit_bubble",
@@ -518,6 +574,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritResist: 18, healthRegen: 2.5 },
     description: "+18% Spirit Resist, +2.5/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/spirit_shielding.webp",
   },
   {
     id: "upgrade_regenerating_bullet_shield",
@@ -527,6 +584,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletDamage: 18, fireRate: 7, bulletResist: 18, healthRegen: 3 },
     description: "+18% Bullet Damage, +7% Fire Rate, +18% Bullet Resist, +3/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/battle_vest.webp",
   },
   {
     id: "upgrade_magic_shield",
@@ -536,6 +594,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritResist: 18, spiritPower: 15, cooldownReduction: 5, healthRegen: 2 },
     description: "+18% Spirit Resist, +15 Spirit Power, +5% Cooldown Reduction, +2/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/enchanters_emblem.webp",
   },
   {
     id: "upgrade_return_fire",
@@ -545,6 +604,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletResist: 10 },
     description: "+10% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/return_fire.webp",
   },
   {
     id: "upgrade_health_stealing_magic",
@@ -554,6 +614,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 90, spiritPower: 6, lifesteal: 13 },
     description: "+90 Max Health, +6 Spirit Power, +13% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/spirit_lifesteal.webp",
   },
   {
     id: "upgrade_healbane",
@@ -563,6 +624,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritPower: 7 },
     description: "+7 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/healbane.webp",
   },
   {
     id: "upgrade_restorative_locket",
@@ -572,6 +634,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritResist: 8 },
     description: "+8% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/restorative_locket.webp",
   },
   {
     id: "upgrade_guardian_ward",
@@ -581,6 +644,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { healthRegen: 1.5, moveSpeed: 2.75 },
     description: "+1.5/s Health Regen, +2.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/guardian_ward.webp",
   },
   {
     id: "upgrade_vex_barrier",
@@ -590,6 +654,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { healthRegen: 1 },
     description: "+1/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/reactive_barrier.webp",
   },
   {
     id: "upgrade_counterspell",
@@ -599,6 +664,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 50, spiritPower: 20, moveSpeed: 1.75 },
     description: "+50 Max Health, +20 Spirit Power, +1.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/counterspell.webp",
   },
   {
     id: "upgrade_reduce_debuff_duration",
@@ -608,6 +674,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { spiritResist: 10 },
     description: "+10% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/debuff_remover.webp",
   },
   {
     id: "upgrade_tech_purge",
@@ -617,6 +684,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { spiritResist: 30, healthRegen: 3 },
     description: "+30% Spirit Resist, +3/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/spirit_resilience.webp",
   },
   {
     id: "upgrade_improved_bullet_armor",
@@ -626,6 +694,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletResist: 30, healthRegen: 3 },
     description: "+30% Bullet Resist, +3/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/bullet_resilience.webp",
   },
   {
     id: "upgrade_metal_skin",
@@ -635,6 +704,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletResist: 12 },
     description: "+12% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/metal_skin.webp",
   },
   {
     id: "upgrade_chonky",
@@ -644,6 +714,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 375, moveSpeed: 1.5 },
     description: "+375 Max Health, +1.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/fortitude.webp",
   },
   {
     id: "upgrade_rescue_beam",
@@ -653,6 +724,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { moveSpeed: 0.75 },
     description: "+0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/rescue_beam.webp",
   },
   {
     id: "upgrade_warp_stone",
@@ -662,6 +734,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletResist: 30 },
     description: "+30% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/warp_stone.webp",
   },
   {
     id: "upgrade_health_nova",
@@ -671,6 +744,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { spiritPower: 8 },
     description: "+8 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/healing_nova.webp",
   },
   {
     id: "upgrade_fury_trance",
@@ -680,6 +754,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 100, bulletDamage: 6, spiritResist: 40, lifesteal: 14 },
     description: "+100 Max Health, +6% Bullet Damage, +40% Spirit Resist, +14% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/fury_trance.webp",
   },
   {
     id: "upgrade_boxing_glove",
@@ -689,6 +764,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 125 },
     description: "+125 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/lifestrike.webp",
   },
   {
     id: "upgrade_veil_walker",
@@ -698,6 +774,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 125, spiritPower: 6, moveSpeed: 3.5 },
     description: "+125 Max Health, +6 Spirit Power, +3.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/veil_walker.webp",
   },
   {
     id: "upgrade_inhibitor",
@@ -707,6 +784,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 150, bulletDamage: 10 },
     description: "+150 Max Health, +10% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/inhibitor.webp",
   },
   {
     id: "upgrade_siphon_bullets",
@@ -716,6 +794,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletDamage: 15, bulletResist: 10 },
     description: "+15% Bullet Damage, +10% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/siphon_bullets.webp",
   },
   {
     id: "upgrade_damage_recycler",
@@ -725,6 +804,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 180, bulletDamage: 12, spiritPower: 12, lifesteal: 56 },
     description: "+180 Max Health, +12% Bullet Damage, +12 Spirit Power, +56% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/leech.webp",
   },
   {
     id: "upgrade_phantom_strike",
@@ -734,6 +814,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletDamage: 15, spiritPower: 8 },
     description: "+15% Bullet Damage, +8 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/phantom_strike.webp",
   },
   {
     id: "upgrade_cheat_death",
@@ -743,6 +824,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 200, bulletResist: 15 },
     description: "+200 Max Health, +15% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/cheat_death.webp",
   },
   {
     id: "upgrade_infuser",
@@ -752,6 +834,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 100, spiritResist: 10, spiritPower: 6, lifesteal: 70 },
     description: "+100 Max Health, +10% Spirit Resist, +6 Spirit Power, +70% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/infuser.webp",
   },
   {
     id: "upgrade_divine_barrier",
@@ -761,6 +844,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { healthRegen: 1.5, moveSpeed: 2.75 },
     description: "+1.5/s Health Regen, +2.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/divine_barrier.webp",
   },
   {
     id: "upgrade_unstoppable",
@@ -770,6 +854,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 125 },
     description: "+125 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/unstoppable.webp",
   },
   {
     id: "upgrade_colossus",
@@ -779,6 +864,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletDamage: 15 },
     description: "+15% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/colossus.webp",
   },
   {
     id: "upgrade_surging_power",
@@ -788,6 +874,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 100, bulletDamage: 6, bulletResist: 10, lifesteal: 13 },
     description: "+100 Max Health, +6% Bullet Damage, +10% Bullet Resist, +13% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/vampiric_burst.webp",
   },
   {
     id: "upgrade_diviners_kevlar",
@@ -797,6 +884,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { spiritPower: 40 },
     description: "+40 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/diviners_kevlar.webp",
   },
   {
     id: "upgrade_auto_cleanse",
@@ -806,6 +894,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletResist: 10, spiritResist: 10, healthRegen: 2 },
     description: "+10% Bullet Resist, +10% Spirit Resist, +2/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/indomitable.webp",
   },
   {
     id: "upgrade_absorbing_armor",
@@ -815,6 +904,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { spiritResist: 22, spiritPower: 14, cooldownReduction: 7 },
     description: "+22% Spirit Resist, +14 Spirit Power, +7% Cooldown Reduction",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/witchmail.webp",
   },
   {
     id: "upgrade_healbuff",
@@ -824,6 +914,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { fireRate: 35, spiritResist: 10, healthRegen: 10, moveSpeed: 1.25 },
     description: "+35% Fire Rate, +10% Spirit Resist, +10/s Health Regen, +1.25 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/healing_tempo.webp",
   },
   {
     id: "upgrade_deflecting_armor",
@@ -833,6 +924,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 130 },
     description: "+130 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/plated_armor.webp",
   },
   {
     id: "upgrade_spellbreaker",
@@ -842,6 +934,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 90, spiritResist: 18 },
     description: "+90 Max Health, +18% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/spellbreaker.webp",
   },
   {
     id: "upgrade_juggernaut",
@@ -851,6 +944,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { healthRegen: 8, moveSpeed: 2.5 },
     description: "+8/s Health Regen, +2.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/vitality/juggernaut.webp",
   },
   {
     id: "upgrade_nullification_aura",
@@ -860,6 +954,7 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { maxHealth: 300 },
     description: "+300 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/nullification_aura.webp",
   },
   {
     id: "upgrade_cloak_of_opportunity",
@@ -869,6 +964,7 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { moveSpeed: 3 },
     description: "+3 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/cloak_of_opportunity.webp",
   },
   {
     id: "upgrade_shadow_strike",
@@ -878,6 +974,7 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { maxHealth: 350 },
     description: "+350 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/shadow_strike.webp",
   },
   {
     id: "upgrade_clip_size",
@@ -887,6 +984,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { bulletDamage: 8 },
     description: "+8% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/basic_magazine.webp",
   },
   {
     id: "upgrade_non_player_bonus",
@@ -896,6 +994,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { healthRegen: 1 },
     description: "+1/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/monster_rounds.webp",
   },
   {
     id: "upgrade_high_velocity_mag",
@@ -905,6 +1004,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { bulletDamage: 8 },
     description: "+8% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/high_velocity_rounds.webp",
   },
   {
     id: "upgrade_headshot_booster",
@@ -914,6 +1014,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { maxHealth: 30 },
     description: "+30 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/headshot_booster.webp",
   },
   {
     id: "upgrade_rapid_rounds",
@@ -923,6 +1024,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { fireRate: 9 },
     description: "+9% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/rapid_rounds.webp",
   },
   {
     id: "upgrade_medic_bullets",
@@ -932,6 +1034,7 @@ export const ITEMS: Item[] = [
     cost: 800,
     stats: { bulletDamage: 6 },
     description: "+6% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/restorative_shot.webp",
   },
   {
     id: "upgrade_pristine_emblem",
@@ -941,6 +1044,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletDamage: 8, spiritPower: 7 },
     description: "+8% Bullet Damage, +7 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/opening_rounds.webp",
   },
   {
     id: "upgrade_long_range",
@@ -950,6 +1054,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { moveSpeed: 0.75 },
     description: "+0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/long_range.webp",
   },
   {
     id: "upgrade_tech_defense_shredders",
@@ -959,6 +1064,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { lifesteal: 10 },
     description: "+10% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/spirit_shredder_bullets.webp",
   },
   {
     id: "upgrade_headshot_booster2",
@@ -968,6 +1074,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 60 },
     description: "+60 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/weakening_headshot.webp",
   },
   {
     id: "upgrade_crackshot",
@@ -977,6 +1084,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { spiritPower: 7 },
     description: "+7 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/mystic_shot.webp",
   },
   {
     id: "upgrade_fleetfoot_boots",
@@ -986,6 +1094,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletDamage: 6, bulletResist: 6 },
     description: "+6% Bullet Damage, +6% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/fleetfoot.webp",
   },
   {
     id: "upgrade_kinetic_sash",
@@ -995,6 +1104,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { fireRate: 25 },
     description: "+25% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/kinetic_dash.webp",
   },
   {
     id: "upgrade_melee_charge",
@@ -1004,6 +1114,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletResist: 6 },
     description: "+6% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/melee_charge.webp",
   },
   {
     id: "upgrade_blitz_bullets",
@@ -1013,6 +1124,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { fireRate: 20, moveSpeed: 0.75 },
     description: "+20% Fire Rate, +0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/swift_striker.webp",
   },
   {
     id: "upgrade_titan_round",
@@ -1022,6 +1134,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletDamage: 14 },
     description: "+14% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/titanic_magazine.webp",
   },
   {
     id: "upgrade_active_reload",
@@ -1031,6 +1144,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { fireRate: 25, moveSpeed: 0.75, lifesteal: 16 },
     description: "+25% Fire Rate, +0.75 Move Speed, +16% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/active_reload.webp",
   },
   {
     id: "upgrade_weapon_backstabber",
@@ -1040,6 +1154,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { maxHealth: 50, moveSpeed: 1.5 },
     description: "+50 Max Health, +1.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/backstabber.webp",
   },
   {
     id: "upgrade_rechargingbullets",
@@ -1049,6 +1164,7 @@ export const ITEMS: Item[] = [
     cost: 1600,
     stats: { bulletDamage: 10 },
     description: "+10% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/recharging_rounds.webp",
   },
   {
     id: "upgrade_non_player_bonus_sacrifice",
@@ -1058,6 +1174,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 50, bulletDamage: 10, healthRegen: 2 },
     description: "+50 Max Health, +10% Bullet Damage, +2/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/cultist_sacrifice.webp",
   },
   {
     id: "upgrade_hollow_point_rounds",
@@ -1067,6 +1184,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 125, bulletDamage: 35, healthRegen: 4.5 },
     description: "+125 Max Health, +35% Bullet Damage, +4.5/s Health Regen",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/hollow_point.webp",
   },
   {
     id: "upgrade_weighted_shots",
@@ -1076,6 +1194,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletDamage: 30, moveSpeed: -0.5 },
     description: "+30% Bullet Damage, +-0.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/weighted_shots.webp",
   },
   {
     id: "upgrade_dps_aura",
@@ -1085,6 +1204,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { fireRate: 26, bulletResist: 17, moveSpeed: 1.5 },
     description: "+26% Fire Rate, +17% Bullet Resist, +1.5 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/heroic_aura.webp",
   },
   {
     id: "upgrade_berserker",
@@ -1094,6 +1214,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletResist: 8 },
     description: "+8% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/berserker.webp",
   },
   {
     id: "upgrade_sharpshooter",
@@ -1103,6 +1224,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletDamage: 10, moveSpeed: 0.3 },
     description: "+10% Bullet Damage, +0.3 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/sharp_shooter.webp",
   },
   {
     id: "upgrade_headhunter",
@@ -1112,6 +1234,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 50, bulletDamage: 5, moveSpeed: 1.75 },
     description: "+50 Max Health, +5% Bullet Damage, +1.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/headhunter.webp",
   },
   {
     id: "upgrade_spellslinger_headshots",
@@ -1121,6 +1244,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 75, lifesteal: 10 },
     description: "+75 Max Health, +10% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/spellslinger_headshots.webp",
   },
   {
     id: "upgrade_close_quarter_combat",
@@ -1130,6 +1254,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 75 },
     description: "+75 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/point_blank.webp",
   },
   {
     id: "upgrade_bullet_armor_reduction_aura",
@@ -1139,6 +1264,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 100, moveSpeed: 0.75 },
     description: "+100 Max Health, +0.75 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/hunters_aura.webp",
   },
   {
     id: "upgrade_cloaking_device_active",
@@ -1148,6 +1274,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { healthRegen: 5, moveSpeed: 2 },
     description: "+5/s Health Regen, +2 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/shadow_weave.webp",
   },
   {
     id: "upgrade_thermal_detonator",
@@ -1157,6 +1284,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { spiritPower: 10 },
     description: "+10 Spirit Power",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/alchemical_fire.webp",
   },
   {
     id: "upgrade_blood_tribute",
@@ -1166,6 +1294,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { fireRate: 35, spiritResist: 8, healthRegen: 4, moveSpeed: 2 },
     description: "+35% Fire Rate, +8% Spirit Resist, +4/s Health Regen, +2 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/blood_tribute.webp",
   },
   {
     id: "upgrade_burst_fire",
@@ -1175,6 +1304,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { fireRate: 10, moveSpeed: 1.25 },
     description: "+10% Fire Rate, +1.25 Move Speed",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/burst_fire.webp",
   },
   {
     id: "upgrade_reinforcing_casings",
@@ -1184,6 +1314,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { maxHealth: 75, bulletDamage: 18 },
     description: "+75 Max Health, +18% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/escalating_resilience.webp",
   },
   {
     id: "upgrade_express_shot",
@@ -1193,6 +1324,7 @@ export const ITEMS: Item[] = [
     cost: 3200,
     stats: { bulletDamage: 8 },
     description: "+8% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/express_shot.webp",
   },
   {
     id: "upgrade_capacitor",
@@ -1202,6 +1334,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { fireRate: 5 },
     description: "+5% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/capacitor.webp",
   },
   {
     id: "upgrade_proc_silence",
@@ -1211,6 +1344,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { spiritResist: 12 },
     description: "+12% Spirit Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/silencer.webp",
   },
   {
     id: "upgrade_fervor",
@@ -1220,6 +1354,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 160, fireRate: 15, lifesteal: 10 },
     description: "+160 Max Health, +15% Fire Rate, +10% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/frenzy.webp",
   },
   {
     id: "upgrade_banshee_slugs",
@@ -1229,6 +1364,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 125 },
     description: "+125 Max Health",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/crippling_headshot.webp",
   },
   {
     id: "upgrade_ricochet",
@@ -1238,6 +1374,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { fireRate: 18 },
     description: "+18% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/ricochet.webp",
   },
   {
     id: "upgrade_tech_overflow",
@@ -1247,6 +1384,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { maxHealth: 90, fireRate: 25, spiritPower: 6, lifesteal: 13 },
     description: "+90 Max Health, +25% Fire Rate, +6 Spirit Power, +13% Lifesteal",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/spiritual_overflow.webp",
   },
   {
     id: "upgrade_glass_cannon",
@@ -1256,6 +1394,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletDamage: 80 },
     description: "+80% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/glass_cannon.webp",
   },
   {
     id: "upgrade_crushing_fists",
@@ -1265,6 +1404,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletResist: 12 },
     description: "+12% Bullet Resist",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/crushing_fists.webp",
   },
   {
     id: "upgrade_aprounds",
@@ -1274,6 +1414,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { bulletDamage: 8 },
     description: "+8% Bullet Damage",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/armor_piercing_rounds.webp",
   },
   {
     id: "upgrade_enchanted_holsters",
@@ -1283,6 +1424,7 @@ export const ITEMS: Item[] = [
     cost: 6400,
     stats: { fireRate: 11, cooldownReduction: 5 },
     description: "+11% Fire Rate, +5% Cooldown Reduction",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/weapon/spell_slinger.webp",
   },
   {
     id: "upgrade_infinite_rounds",
@@ -1292,5 +1434,6 @@ export const ITEMS: Item[] = [
     cost: 9999,
     stats: { fireRate: 35 },
     description: "+35% Fire Rate",
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/items/brawl/infinite_rounds.webp",
   },
 ]

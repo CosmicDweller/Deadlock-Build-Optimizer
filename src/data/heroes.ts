@@ -13,6 +13,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 800, moveSpeed: 6.4 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/bull_sm.webp",
   },
   {
     id: "fencer",
@@ -21,6 +22,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 770, moveSpeed: 7.2 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/fencer_sm.webp",
   },
   {
     id: "bebop",
@@ -29,6 +31,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 880, moveSpeed: 6.45 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/bebop_sm.webp",
   },
   {
     id: "punkgoat",
@@ -37,6 +40,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 820, moveSpeed: 7 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/punkgoat_sm.webp",
   },
   {
     id: "nano",
@@ -45,6 +49,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 730, moveSpeed: 6.8 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/nano_sm.webp",
   },
   {
     id: "unicorn",
@@ -53,6 +58,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 690, moveSpeed: 6.2 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/unicorn_sm.webp",
   },
   {
     id: "drifter",
@@ -61,6 +67,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 755, moveSpeed: 6.9 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/drifter_sm.webp",
   },
   {
     id: "dynamo",
@@ -69,6 +76,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 880, moveSpeed: 6.7 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/sumo_sm.webp",
   },
   {
     id: "necro",
@@ -77,6 +85,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 730, moveSpeed: 7 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/necro_sm.webp",
   },
   {
     id: "orion",
@@ -85,6 +94,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 780, moveSpeed: 6.3 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/archer_sm.webp",
   },
   {
     id: "haze",
@@ -93,6 +103,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 730, moveSpeed: 8.2 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/haze_sm.webp",
   },
   {
     id: "astro",
@@ -101,6 +112,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 780, moveSpeed: 8.2 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/astro_sm.webp",
   },
   {
     id: "inferno",
@@ -109,6 +121,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 830, moveSpeed: 6.7 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/inferno_sm.webp",
   },
   {
     id: "tengu",
@@ -117,6 +130,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 755, moveSpeed: 7.2 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/tengu_sm.webp",
   },
   {
     id: "kelvin",
@@ -125,6 +139,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 880, moveSpeed: 6.7 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/kelvin_sm.webp",
   },
   {
     id: "ghost",
@@ -133,6 +148,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 880, moveSpeed: 6.3 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/spectre_sm.webp",
   },
   {
     id: "lash",
@@ -141,6 +157,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 780, moveSpeed: 7.2 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/lash_sm.webp",
   },
   {
     id: "forge",
@@ -149,6 +166,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 780, moveSpeed: 6.7 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/engineer_sm.webp",
   },
   {
     id: "vampirebat",
@@ -157,6 +175,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 660, moveSpeed: 6.5 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/vampirebat_sm.webp",
   },
   {
     id: "mirage",
@@ -165,6 +184,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 730, moveSpeed: 7 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/mirage_sm.webp",
   },
   {
     id: "krill",
@@ -173,6 +193,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 930, moveSpeed: 8 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/digger_sm.webp",
   },
   {
     id: "bookworm",
@@ -181,6 +202,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 680, moveSpeed: 6.9 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/bookworm_sm.webp",
   },
   {
     id: "chrono",
@@ -189,6 +211,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 730, moveSpeed: 6.7 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/chrono_sm.webp",
   },
   {
     id: "synth",
@@ -197,6 +220,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 780, moveSpeed: 7.2 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/synth_sm.webp",
   },
   {
     id: "familiar",
@@ -205,6 +229,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 680, moveSpeed: 7.2 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/familiar_sm.webp",
   },
   {
     id: "gigawatt",
@@ -213,6 +238,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 730, moveSpeed: 6.7 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/gigawatt_sm.webp",
   },
   {
     id: "shiv",
@@ -221,6 +247,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 830, moveSpeed: 6.5 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/shiv_sm.webp",
   },
   {
     id: "werewolf",
@@ -229,6 +256,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 830, moveSpeed: 6.7 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/werewolf_sm.webp",
   },
   {
     id: "magician",
@@ -237,6 +265,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 730, moveSpeed: 7.2 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/magician_sm.webp",
   },
   {
     id: "doorman",
@@ -245,6 +274,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 755, moveSpeed: 7.9 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/doorman_sm.webp",
   },
   {
     id: "priest",
@@ -253,6 +283,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 820, moveSpeed: 6.4 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/priest_sm.webp",
   },
   {
     id: "frank",
@@ -261,6 +292,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 800, moveSpeed: 6.3 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/frank_sm.webp",
   },
   {
     id: "hornet",
@@ -269,6 +301,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 755, moveSpeed: 7.9 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/hornet_sm.webp",
   },
   {
     id: "viscous",
@@ -277,6 +310,7 @@ export const HEROES: Hero[] = [
     archetype: "spirit",
     baseStats: { maxHealth: 780, moveSpeed: 7.2 },
     defaultWeights: { spiritPower: 0.9, cooldownReduction: 0.6, maxHealth: 0.3, spiritResist: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/viscous_sm.webp",
   },
   {
     id: "viper",
@@ -285,6 +319,7 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 780, moveSpeed: 6.9 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/kali_sm.webp",
   },
   {
     id: "warden",
@@ -293,6 +328,7 @@ export const HEROES: Hero[] = [
     archetype: "vitality",
     baseStats: { maxHealth: 805, moveSpeed: 6.3 },
     defaultWeights: { maxHealth: 0.8, bulletResist: 0.5, lifesteal: 0.5, bulletDamage: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/warden_sm.webp",
   },
   {
     id: "wraith",
@@ -301,6 +337,7 @@ export const HEROES: Hero[] = [
     archetype: "bullet",
     baseStats: { maxHealth: 730, moveSpeed: 7.2 },
     defaultWeights: { bulletDamage: 0.9, fireRate: 0.6, maxHealth: 0.3, bulletResist: 0.3, lifesteal: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/wraith_sm.webp",
   },
   {
     id: "yamato",
@@ -309,5 +346,6 @@ export const HEROES: Hero[] = [
     archetype: "hybrid",
     baseStats: { maxHealth: 730, moveSpeed: 8.2 },
     defaultWeights: { bulletDamage: 0.5, spiritPower: 0.5, maxHealth: 0.4, cooldownReduction: 0.3 },
+    image: "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/yamato_sm.webp",
   },
 ]

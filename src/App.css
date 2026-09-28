@@ -91,12 +91,12 @@
   background: var(--bg-panel-alt);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px 10px;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   text-align: left;
   color: var(--text);
   transition: border-color 0.15s ease, background 0.15s ease;
@@ -111,17 +111,38 @@
   background: #2a1c18;
 }
 
+.hero-icon {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--bg);
+}
+
+.hero-tile-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+
 .hero-name {
   font-weight: 600;
   font-size: 14px;
 }
 
 .hero-archetype {
-  font-size: 11px;
-  padding: 2px 6px;
+  font-size: 10px;
+  padding: 2px 5px;
   border-radius: 4px;
   background: var(--bg);
   color: var(--text-dim);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .archetype-bullet {
@@ -170,28 +191,36 @@
 }
 
 .affinity-row {
-  display: grid;
-  grid-template-columns: 46px 1fr auto;
-  align-items: baseline;
+  display: flex;
+  align-items: center;
   gap: 8px;
   font-size: 12px;
 }
 
-.affinity-row > * {
-  min-width: 0;
-}
-
 .affinity-lift {
+  width: 42px;
+  flex: none;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   font-size: 11px;
 }
 
+.affinity-icon {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--bg);
+}
+
 .affinity-name {
+  flex: 1;
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .affinity-rates {
+  flex: none;
   color: var(--text-dim);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -474,8 +503,16 @@
 
 .item-card-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+}
+
+.item-icon {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 6px;
+  background: var(--bg);
 }
 
 .item-name {
