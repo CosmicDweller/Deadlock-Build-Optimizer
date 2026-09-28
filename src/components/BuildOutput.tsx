@@ -6,6 +6,8 @@ import { computeBuildStats, investmentCategoryFor } from '../lib/statTotals'
 import { learnedItemBreakdown, learnedItemValue } from '../lib/learnedScoring'
 import type { ObjectiveWeights } from '../lib/learnedScoring'
 import { GameIcon } from './GameIcon'
+import { ProgressionView } from './ProgressionView'
+import type { Progression } from '../lib/progression'
 
 interface Props {
   result: BuildResult | null
@@ -16,7 +18,12 @@ interface Props {
   metaWeight: number
   hero: Hero | null
   level: number
+  progression: Progression | null
+  view: BuildView
+  onViewChange: (view: BuildView) => void
 }
+
+export type BuildView = 'final' | 'progression'
 
 const CATEGORIES: ItemCategory[] = ['weapon', 'vitality', 'spirit']
 
@@ -34,6 +41,9 @@ export function BuildOutput({
   metaWeight,
   hero,
   level,
+  progression,
+  view,
+  onViewChange,
 }: Props) {
   if (!result || !hero) {
     return (
@@ -53,6 +63,24 @@ export function BuildOutput({
     <div className="panel build-output">
       <div className="panel-header">
         <h2>Recommended Build</h2>
+        <div className="mode-toggle build-view-toggle" role="tablist">
+          <button
+            role="tab"
+            aria-selected={view === 'final'}
+            className={`mode-button${view === 'final' ? ' active' : ''}`}
+            onClick={() => onViewChange('final')}
+          >
+            Final build
+          </button>
+          <button
+            role="tab"
+            aria-selected={view === 'progression'}
+            className={`mode-button${view === 'progression' ? ' active' : ''}`}
+            onClick={() => onViewChange('progression')}
+          >
+            Progression
+          </button>
+        </div>
         <div className="build-cost">
           <span>{result.totalCost.toLocaleString()} / {budget.toLocaleString()} souls</span>
           <span className="build-remaining">
@@ -69,7 +97,11 @@ export function BuildOutput({
         </p>
       )}
 
-      {CATEGORIES.map((category) => {
+      {view === 'progression' && progression && (
+        <ProgressionView progression={progression} heroName={hero.name} />
+      )}
+
+      {view === 'final' && CATEGORIES.map((category) => {
         const items = result.chosenItems.filter((i) => i.category === category)
         const spend = result.categorySpend[category]
         const bonus = result.categoryInvestment[category]

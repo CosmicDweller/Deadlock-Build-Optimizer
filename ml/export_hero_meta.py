@@ -32,7 +32,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
 
@@ -49,6 +49,13 @@ SCORE_CUTOFF = 0.05
 # games rarely end at low level, so those samples are early-surrender noise.
 MIN_LEVEL_SAMPLES = 30
 MAX_HERO_LEVEL = 36
+# Minute marks to sample the spend curve at. Beyond ~36 the sample thins
+# out fast, because that is roughly when games end.
+CURVE_MINUTES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36]
+MIN_CURVE_SAMPLES = 2000
+# Minute marks the progression view plans around: laning, mid, late.
+PHASE_MINUTES = [10, 22, 36]
+MIN_PHASE_SAMPLES = 100
 
 
 def level_by_net_worth(df) -> list[dict]:
@@ -89,6 +96,141 @@ def level_by_net_worth(df) -> list[dict]:
     for level in sorted(curve):
         running = max(running, curve[level])
         out.append({"level": level, "souls": int(round(running))})
+    return out
+
+
+def soul_curve(matches_path=None) -> list[dict]:
+    """Median cumulative item spend, and item count, by minute.
+
+    Drives the phase budgets in the progression view. Taken from purchase
+    timings in the raw match log, which the cached player table throws
+    away, so this re-streams the dump.
+
+    Only purchases still held at the end are counted, and each item once —
+    the same basis as the final build, so a phase budget and the build it
+    has to pay for are measured the same way. Entries are sorted by
+    game_time_s rather than trusted in array order, because roughly 8% of
+    players' item arrays are not stored in time order.
+    """
+    from deadlock_ml.catalog import load_items as _load_items
+    from deadlock_ml.dataset import iter_matches
+
+    shop = _load_items()
+    samples: dict[int, list[tuple[int, int]]] = {m: [] for m in CURVE_MINUTES}
+    for match in iter_matches() if matches_path is None else iter_matches(matches_path):
+        if match.get("not_scored"):
+            continue
+        duration = match.get("duration_s", 0)
+        for player in match["players"]:
+            if player.get("abandon_match_time_s"):
+                continue
+            entries = [
+                e for e in (player.get("items") or [])
+                if e["item_id"] in shop and not e.get("sold_time_s")
+            ]
+            seen: set[int] = set()
+            timeline: list[tuple[int, int]] = []
+            for entry in sorted(entries, key=lambda e: e["game_time_s"]):
+                if entry["item_id"] in seen:
+                    continue
+                seen.add(entry["item_id"])
+                timeline.append((entry["game_time_s"], shop[entry["item_id"]].cost))
+            spend = 0
+            index = 0
+            for minute in CURVE_MINUTES:
+                if minute * 60 > duration:
+                    break
+                while index < len(timeline) and timeline[index][0] <= minute * 60:
+                    spend += timeline[index][1]
+                    index += 1
+                samples[minute].append((spend, index))
+
+    curve = []
+    for minute in CURVE_MINUTES:
+        rows = samples[minute]
+        if len(rows) < MIN_CURVE_SAMPLES:
+            continue
+        spends = sorted(r[0] for r in rows)
+        counts = sorted(r[1] for r in rows)
+        mid = len(rows) // 2
+        curve.append({
+            "minute": minute,
+            "souls": int(spends[mid]),
+            "items": int(counts[mid]),
+            "samples": len(rows),
+        })
+    return curve
+
+
+def phase_pick_rates(matches_path=None) -> dict:
+    """Per-hero item pick rates AT each phase minute, as z-scored log-odds.
+
+    The endgame model cannot see lane value: it scores items by what they
+    produced over a whole match, so asking it for a 10-minute build just
+    returns the cheap corner of the late build. Measuring what players
+    actually hold at minute 10 fixes that directly — Wraith holds Rapid
+    Rounds in 49% of games at minute 10 and essentially never at 22, having
+    upgraded it into Swift Striker.
+
+    An item counts as held at minute M if it was bought by then and not yet
+    sold, so upgrade components correctly drop out once consumed. Same
+    log-odds transform and z-normalization as the endgame meta score, so the
+    two are interchangeable in the blend.
+    """
+    from deadlock_ml.catalog import load_items as _load_items, load_heroes as _load_heroes
+    from deadlock_ml.dataset import iter_matches
+
+    shop = _load_items()
+    heroes = _load_heroes()
+    slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
+
+    held: dict = {m: defaultdict(Counter) for m in PHASE_MINUTES}
+    seen_counts: dict = {m: Counter() for m in PHASE_MINUTES}
+
+    for match in iter_matches() if matches_path is None else iter_matches(matches_path):
+        if match.get("not_scored"):
+            continue
+        duration = match.get("duration_s", 0)
+        for player in match["players"]:
+            if player.get("abandon_match_time_s"):
+                continue
+            hero_id = player["hero_id"]
+            if hero_id not in slug_of:
+                continue
+            entries = [e for e in (player.get("items") or []) if e["item_id"] in shop]
+            for minute in PHASE_MINUTES:
+                if minute * 60 > duration:
+                    continue
+                seen_counts[minute][hero_id] += 1
+                owned = {
+                    e["item_id"] for e in entries
+                    if e["game_time_s"] <= minute * 60
+                    and (not e.get("sold_time_s") or e["sold_time_s"] > minute * 60)
+                }
+                for item_id in owned:
+                    held[minute][hero_id][item_id] += 1
+
+    raw: dict[tuple[int, str, str], float] = {}
+    for minute in PHASE_MINUTES:
+        for hero_id, games in seen_counts[minute].items():
+            if games < MIN_PHASE_SAMPLES:
+                continue
+            for item_id, item in shop.items():
+                rate = (held[minute][hero_id].get(item_id, 0) + SMOOTHING) / (games + 2 * SMOOTHING)
+                raw[(minute, slug_of[hero_id], item.class_name)] = math.log(rate / (1 - rate))
+
+    if not raw:
+        return {}
+    values = list(raw.values())
+    mean = sum(values) / len(values)
+    sd = math.sqrt(sum((v - mean) ** 2 for v in values) / len(values)) or 1.0
+
+    out: dict = {}
+    for (minute, slug, item_class), value in raw.items():
+        z = (value - mean) / sd
+        if abs(z) < SCORE_CUTOFF:
+            continue
+        out.setdefault(str(minute), {}).setdefault(slug, {})[item_class] = round(z, 3)
     return out
 
 
@@ -181,6 +323,8 @@ def main() -> None:
         "heroGames": {slug_of[h]: int(n) for h, n in
                       df.groupby("hero_id").size().items() if h in slug_of},
         "levelByNetWorth": level_by_net_worth(df),
+        "soulCurve": soul_curve(),
+        "phaseMeta": phase_pick_rates(),
         "affinity": affinity_out,
         "archetypes": archetypes_out,
         "metaScore": meta_score,
@@ -194,6 +338,9 @@ def main() -> None:
     print(f"  archetypes (well-separated only): {len(archetypes_out)} heroes")
     print(f"  meta scores: {n_scores:,} hero/item pairs")
     print(f"  level curve: {len(payload['levelByNetWorth'])} levels")
+    print(f"  soul curve: {len(payload['soulCurve'])} minute marks")
+    n_phase = sum(len(i) for m in payload["phaseMeta"].values() for i in m.values())
+    print(f"  phase meta: {n_phase:,} entries over {len(payload['phaseMeta'])} phases")
 
 
 if __name__ == "__main__":

@@ -12,10 +12,14 @@ import type { Hero, ScoringMode, StatKey } from './types'
 import { HeroPicker } from './components/HeroPicker'
 import { StatWeightPanel } from './components/StatWeightPanel'
 import { BuildOutput } from './components/BuildOutput'
+import type { BuildView } from './components/BuildOutput'
+import { buildProgression } from './lib/progression'
 import { HeroMetaPanel } from './components/HeroMetaPanel'
 import './App.css'
 
-const DEFAULT_BUDGET = 20000
+// Median cumulative item spend at minute 36, which is also about when
+// games end — i.e. what a full game actually affords.
+const DEFAULT_BUDGET = 33600
 const DEFAULT_META_WEIGHT = 0.3
 
 function App() {
@@ -28,6 +32,7 @@ function App() {
   // Level normally tracks the soul budget, since both come from farming.
   // A manual pick wins until it's cleared.
   const [levelOverride, setLevelOverride] = useState<number | null>(null)
+  const [view, setView] = useState<BuildView>('progression')
 
   function handleSelectHero(hero: Hero) {
     setSelectedHero(hero)
@@ -64,6 +69,17 @@ function App() {
         ? createStatScoring(ITEMS, weights, referenceHealth)
         : createLearnedScoring(objectives, selectedHero.id, metaWeight)
     return optimizeBuild(ITEMS, scoring, budget)
+  }, [selectedHero, mode, weights, objectives, metaWeight, budget, level])
+
+  const progression = useMemo(() => {
+    if (!selectedHero) return null
+    const referenceHealth =
+      selectedHero.baseStats.maxHealth + selectedHero.perLevel.maxHealth * (level - 1)
+    const scoring =
+      mode === 'stats'
+        ? createStatScoring(ITEMS, weights, referenceHealth)
+        : createLearnedScoring(objectives, selectedHero.id, metaWeight)
+    return buildProgression(ITEMS, scoring, budget, selectedHero.id, metaWeight)
   }, [selectedHero, mode, weights, objectives, metaWeight, budget, level])
 
   return (
@@ -111,6 +127,9 @@ function App() {
           metaWeight={metaWeight}
           hero={selectedHero}
           level={level}
+          progression={progression}
+          view={view}
+          onViewChange={setView}
         />
       </main>
 

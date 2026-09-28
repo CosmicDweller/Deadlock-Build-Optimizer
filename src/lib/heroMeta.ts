@@ -37,6 +37,15 @@ export interface HeroArchetypes {
   clusters: ArchetypeCluster[]
 }
 
+export interface SoulCurvePoint {
+  minute: number
+  /** Median cumulative item spend by this minute. */
+  souls: number
+  /** Median item count held by this minute. */
+  items: number
+  samples: number
+}
+
 export interface LevelPoint {
   level: number
   /** Net worth at which players typically reach this level. */
@@ -48,6 +57,9 @@ interface HeroMetaFile {
   nMatches: number
   heroGames: Record<string, number>
   levelByNetWorth: LevelPoint[]
+  soulCurve: SoulCurvePoint[]
+  /** phase minute -> hero -> item -> z-scored log-odds of being held then. */
+  phaseMeta: Record<string, Record<string, Record<string, number>>>
   affinity: Record<string, AffinityEntry[]>
   /** Only heroes whose builds actually separate into distinct clusters. */
   archetypes: Record<string, HeroArchetypes>
@@ -90,6 +102,27 @@ export function levelForSouls(souls: number): number {
     else break
   }
   return level
+}
+
+/**
+ * How commonly this hero is holding an item at a given phase minute.
+ *
+ * Distinct from `metaScore`, which describes the finished build. The
+ * endgame model has no concept of lane value, so without this a 10-minute
+ * build is just the cheap corner of the late build. Falls back to the
+ * endgame score when a phase has too few games to measure.
+ */
+export function phaseMetaScore(
+  minute: number,
+  heroId: string | null,
+  itemId: string,
+): number {
+  if (!heroId) return 0
+  const phase = HERO_META.phaseMeta?.[String(minute)]
+  if (!phase) return metaScore(heroId, itemId)
+  const hero = phase[heroId]
+  if (!hero) return metaScore(heroId, itemId)
+  return hero[itemId] ?? 0
 }
 
 export function metaScore(heroId: string | null, itemId: string): number {

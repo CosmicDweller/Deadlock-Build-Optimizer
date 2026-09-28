@@ -578,6 +578,101 @@
   color: var(--text-dim);
 }
 
+.build-view-toggle {
+  margin-bottom: 0;
+  flex: 0 0 auto;
+}
+
+.progression {
+  margin-bottom: 8px;
+}
+
+.phase-block {
+  margin-bottom: 18px;
+}
+
+.phase-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.phase-title {
+  margin: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+}
+
+.phase-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.phase-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--bg-panel-alt);
+  border: 1px solid transparent;
+  font-size: 13px;
+}
+
+.phase-item.new {
+  border-color: var(--border);
+}
+
+.phase-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 5px;
+  background: var(--bg);
+}
+
+.phase-item-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.phase-new {
+  margin-left: 6px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+
+.phase-fate {
+  flex: none;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.phase-fate.fate-upgrades {
+  color: var(--vitality);
+  border-color: var(--vitality);
+}
+
+.phase-fate.fate-sold {
+  color: var(--weapon);
+  border-color: var(--accent-dim);
+}
+
 .totals-level {
   text-transform: none;
   letter-spacing: 0;
