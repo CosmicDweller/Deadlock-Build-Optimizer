@@ -4,12 +4,17 @@ One row per (match, player). The `items` column holds the player's FINAL
 build: shop items they still owned at the end of the match, de-duplicated.
 Ability-level-up events and sold items are dropped — the raw `items` array
 mixes all three together.
+
+The match dump is streamed one match at a time rather than read whole.
+At 1.2GB of JSON a `json.load` inflates to roughly ten gigabytes of Python
+objects, but each match collapses to twelve small rows and is then
+discarded, so streaming keeps peak memory to the output table.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
+import ijson
 import pandas as pd
 
 from .catalog import RAW, load_items
@@ -63,13 +68,16 @@ def final_build(player: dict, shop_ids: set[int]) -> list[int]:
     return build
 
 
-def build_player_table(matches_path: Path = MATCHES_PATH) -> pd.DataFrame:
-    with open(matches_path) as f:
-        matches = json.load(f)
+def iter_matches(matches_path: Path = MATCHES_PATH):
+    """Yield matches one at a time from the top-level JSON array."""
+    with open(matches_path, "rb") as f:
+        yield from ijson.items(f, "item", use_float=True)
 
+
+def build_player_table(matches_path: Path = MATCHES_PATH) -> pd.DataFrame:
     shop_ids = set(load_items())
     rows = []
-    for match in matches:
+    for match in iter_matches(matches_path):
         # Skip matches that weren't scored normally — abandons and unscored
         # games have outcomes that say nothing about build quality.
         if match.get("not_scored"):

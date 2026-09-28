@@ -3,3 +3,6 @@ numpy>=1.26
 scikit-learn>=1.5
 pyarrow>=16.0
 joblib>=1.4
+# Streams the match dump match-by-match; loading 1.2GB of JSON at once
+# inflates to roughly ten gigabytes of Python objects.
+ijson>=3.3
