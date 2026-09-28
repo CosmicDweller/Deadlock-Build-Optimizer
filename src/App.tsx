@@ -7,6 +7,7 @@ import {
   createLearnedScoring,
 } from './lib/learnedScoring'
 import type { ObjectiveWeights } from './lib/learnedScoring'
+import { DEFAULT_HERO_LEVEL } from './lib/statTotals'
 import type { Hero, ScoringMode, StatKey } from './types'
 import { HeroPicker } from './components/HeroPicker'
 import { StatWeightPanel } from './components/StatWeightPanel'
@@ -24,6 +25,7 @@ function App() {
   const [objectives, setObjectives] = useState<ObjectiveWeights>({})
   const [metaWeight, setMetaWeight] = useState(DEFAULT_META_WEIGHT)
   const [budget, setBudget] = useState(DEFAULT_BUDGET)
+  const [level, setLevel] = useState(DEFAULT_HERO_LEVEL)
 
   function handleSelectHero(hero: Hero) {
     setSelectedHero(hero)
@@ -48,12 +50,16 @@ function App() {
 
   const result = useMemo(() => {
     if (!selectedHero) return null
+    // Vitality investment is a percentage, so stat-mode scoring needs the
+    // health it will apply to before it can be compared with flat item health.
+    const referenceHealth =
+      selectedHero.baseStats.maxHealth + selectedHero.perLevel.maxHealth * (level - 1)
     const scoring =
       mode === 'stats'
-        ? createStatScoring(ITEMS, weights)
+        ? createStatScoring(ITEMS, weights, referenceHealth)
         : createLearnedScoring(objectives, selectedHero.id, metaWeight)
     return optimizeBuild(ITEMS, scoring, budget)
-  }, [selectedHero, mode, weights, objectives, metaWeight, budget])
+  }, [selectedHero, mode, weights, objectives, metaWeight, budget, level])
 
   return (
     <div className="app-shell">
@@ -82,6 +88,8 @@ function App() {
               onReset={handleReset}
               budget={budget}
               onBudgetChange={setBudget}
+              level={level}
+              onLevelChange={setLevel}
             />
             <HeroMetaPanel hero={selectedHero} />
           </div>
@@ -94,6 +102,8 @@ function App() {
           objectives={objectives}
           heroId={selectedHero?.id ?? null}
           metaWeight={metaWeight}
+          hero={selectedHero}
+          level={level}
         />
       </main>
 

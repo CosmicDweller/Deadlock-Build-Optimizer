@@ -2,6 +2,7 @@ import { ALL_STAT_KEYS, STAT_LABELS } from '../types'
 import type { ScoringMode, StatKey } from '../types'
 import { LEARNED, LEARNED_TARGETS } from '../lib/learnedScoring'
 import type { ObjectiveWeights } from '../lib/learnedScoring'
+import { MAX_HERO_LEVEL, MIN_HERO_LEVEL } from '../lib/statTotals'
 
 interface Props {
   mode: ScoringMode
@@ -15,6 +16,8 @@ interface Props {
   onReset: () => void
   budget: number
   onBudgetChange: (value: number) => void
+  level: number
+  onLevelChange: (value: number) => void
 }
 
 export function StatWeightPanel({
@@ -29,6 +32,8 @@ export function StatWeightPanel({
   onReset,
   budget,
   onBudgetChange,
+  level,
+  onLevelChange,
 }: Props) {
   return (
     <div className="panel stat-panel">
@@ -85,6 +90,33 @@ export function StatWeightPanel({
           onChange={(e) => {
             const value = Number(e.target.value)
             if (!Number.isNaN(value)) onBudgetChange(Math.min(99999, Math.max(800, value)))
+          }}
+        />
+      </div>
+
+      <div className="budget-row">
+        <label htmlFor="hero-level">Hero Level</label>
+        <input
+          id="hero-level"
+          type="range"
+          min={MIN_HERO_LEVEL}
+          max={MAX_HERO_LEVEL}
+          step={1}
+          value={level}
+          onChange={(e) => onLevelChange(Number(e.target.value))}
+        />
+        <input
+          className="budget-number"
+          type="number"
+          min={MIN_HERO_LEVEL}
+          max={MAX_HERO_LEVEL}
+          step={1}
+          value={level}
+          onChange={(e) => {
+            const value = Number(e.target.value)
+            if (!Number.isNaN(value)) {
+              onLevelChange(Math.min(MAX_HERO_LEVEL, Math.max(MIN_HERO_LEVEL, value)))
+            }
           }}
         />
       </div>

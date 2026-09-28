@@ -86,6 +86,13 @@ export interface Hero {
   baseStats: {
     maxHealth: number
     moveSpeed: number
+    healthRegen: number
+  }
+  /** Gained per standard upgrade; a level-L hero has had L-1 of them. */
+  perLevel: {
+    maxHealth: number
+    spiritPower: number
+    bulletDamage: number
   }
   defaultWeights: Partial<Record<StatKey, number>>
   /** WebP portrait URL on the official Deadlock CDN; may be empty. */
@@ -99,7 +106,8 @@ export interface BuildResult {
   score: number
   slotsUsed: Record<ItemCategory, number>
   categorySpend: Record<ItemCategory, number>
-  categoryBonusActive: Record<ItemCategory, boolean>
+  /** Cumulative investment bonus per category at the spend reached. */
+  categoryInvestment: Record<ItemCategory, number>
   /** False in match-data mode, where the bonus is already inside the coefficients. */
   investmentBonusApplied: boolean
 }

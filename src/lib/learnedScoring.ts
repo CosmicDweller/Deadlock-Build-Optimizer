@@ -126,7 +126,7 @@ export function createLearnedScoring(
     // bonus contributed — players who crossed a threshold had the bonus
     // active when their end-of-match stats were recorded. Adding our own
     // estimate on top would double-count it.
-    categoryBonus: (_category: ItemCategory) => 0,
+    categoryBonusAt: (_category: ItemCategory, _souls: number) => 0,
     appliesInvestmentBonus: false,
   }
 }

@@ -1,7 +1,8 @@
-import type { BuildResult, ItemCategory, ScoringMode } from '../types'
+import type { BuildResult, Hero, ItemCategory, ScoringMode, StatKey } from '../types'
 import { CATEGORY_LABELS, STAT_LABELS, STAT_UNITS, ALL_STAT_KEYS } from '../types'
-import { INVESTMENT_BONUSES, INVESTMENT_THRESHOLD } from '../data/investmentBonuses'
+import { INVESTMENT, nextInvestmentTier } from '../data/investmentBonuses'
 import { MAX_SLOTS } from '../lib/optimizer'
+import { computeBuildStats, investmentCategoryFor } from '../lib/statTotals'
 import { learnedItemBreakdown, learnedItemValue } from '../lib/learnedScoring'
 import type { ObjectiveWeights } from '../lib/learnedScoring'
 import { GameIcon } from './GameIcon'
@@ -13,12 +14,28 @@ interface Props {
   objectives: ObjectiveWeights
   heroId: string | null
   metaWeight: number
+  hero: Hero | null
+  level: number
 }
 
 const CATEGORIES: ItemCategory[] = ['weapon', 'vitality', 'spirit']
 
-export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeight }: Props) {
-  if (!result) {
+function formatStat(key: StatKey, value: number): string {
+  const rounded = Math.abs(value) >= 100 ? Math.round(value) : Math.round(value * 10) / 10
+  return `${rounded.toLocaleString()}${STAT_UNITS[key]}`
+}
+
+export function BuildOutput({
+  result,
+  budget,
+  mode,
+  objectives,
+  heroId,
+  metaWeight,
+  hero,
+  level,
+}: Props) {
+  if (!result || !hero) {
     return (
       <div className="panel build-output">
         <h2>Recommended Build</h2>
@@ -30,6 +47,7 @@ export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeig
   const remaining = budget - result.totalCost
   const hasAnyItems = result.chosenItems.length > 0
   const learned = mode === 'learned'
+  const stats = computeBuildStats(hero, result.chosenItems, level)
 
   return (
     <div className="panel build-output">
@@ -54,9 +72,18 @@ export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeig
       {CATEGORIES.map((category) => {
         const items = result.chosenItems.filter((i) => i.category === category)
         const spend = result.categorySpend[category]
-        const active = result.categoryBonusActive[category]
-        const progressPct = Math.min(100, (spend / INVESTMENT_THRESHOLD) * 100)
-        const bonus = INVESTMENT_BONUSES[category]
+        const bonus = result.categoryInvestment[category]
+        const spec = INVESTMENT[category]
+        const next = nextInvestmentTier(category, spend)
+        // Progress runs between the tier just cleared and the next one, so
+        // the bar reads as distance to the upcoming step rather than to a
+        // single fixed goal.
+        const clearedSouls = [...spec.tiers].reverse().find((t) => spend >= t.souls)?.souls ?? 0
+        const progressPct = next
+          ? Math.min(100, ((spend - clearedSouls) / (next.souls - clearedSouls)) * 100)
+          : 100
+        const suffix = spec.unit === 'percent' ? '%' : ''
+
         return (
           <div className="category-block" key={category}>
             <h3 className={`category-title category-${category}`}>
@@ -67,26 +94,24 @@ export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeig
             <div className="investment-bar">
               <div className="investment-track">
                 <div
-                  className={`investment-fill${active ? ' active' : ''}`}
+                  className={`investment-fill${bonus > 0 ? ' active' : ''}`}
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
               <div className="investment-label">
                 <span>
-                  {spend.toLocaleString()} / {INVESTMENT_THRESHOLD.toLocaleString()} invested
-                  {active ? ' — bonus active' : ''}
+                  {spend.toLocaleString()} invested
+                  {next
+                    ? ` · ${(next.souls - spend).toLocaleString()} to +${next.individual}${suffix}`
+                    : ' · max tier'}
+                  {next?.milestone ? ' (milestone)' : ''}
                 </span>
-                {result.investmentBonusApplied && (
+                {result.investmentBonusApplied && bonus > 0 && (
                   <span className="investment-bonus-chips">
-                    {Object.entries(bonus.stats).map(([key, value]) => (
-                      <span
-                        className={`stat-chip investment-chip${active ? ' active' : ''}`}
-                        key={key}
-                      >
-                        {STAT_LABELS[key as keyof typeof STAT_LABELS]} +{value}
-                        {STAT_UNITS[key as keyof typeof STAT_UNITS]}
-                      </span>
-                    ))}
+                    <span className="stat-chip investment-chip active">
+                      {spec.label.replace(' (%)', '')} +{bonus}
+                      {suffix}
+                    </span>
                   </span>
                 )}
               </div>
@@ -108,7 +133,12 @@ export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeig
                       <div className="item-card-header">
                         <GameIcon className="item-icon" src={item.image} alt="" />
                         <span className="item-name">{item.name}</span>
-                        {learned && <span className="item-value">{value >= 0 ? '+' : ''}{value.toFixed(2)}</span>}
+                        {learned && (
+                          <span className="item-value">
+                            {value >= 0 ? '+' : ''}
+                            {value.toFixed(2)}
+                          </span>
+                        )}
                         <span className="item-tier">T{item.tier}</span>
                         <span className="item-cost">{item.cost.toLocaleString()}</span>
                       </div>
@@ -144,28 +174,58 @@ export function BuildOutput({ result, budget, mode, objectives, heroId, metaWeig
         )
       })}
 
-      {hasAnyItems && (
-        <div className="totals-block">
-          <h3>Total Build Stats</h3>
-          <div className="totals-grid">
-            {ALL_STAT_KEYS.filter((key) => (result.totalStats[key] ?? 0) !== 0).map((key) => (
-              <div className="totals-row" key={key}>
-                <span>{STAT_LABELS[key]}</span>
-                <span>
-                  +{result.totalStats[key]}
-                  {STAT_UNITS[key]}
-                </span>
-              </div>
-            ))}
-          </div>
-          {learned && (
-            <p className="mode-footnote">
-              Totals cover listed passive stats only. The build was chosen on learned values,
-              which also capture active and conditional effects these totals can't show.
-            </p>
-          )}
-        </div>
-      )}
+      <div className="totals-block">
+        <h3>
+          Resulting Stats{' '}
+          <span className="totals-level">
+            {hero.name} at level {level}
+          </span>
+        </h3>
+        <table className="stat-table">
+          <thead>
+            <tr>
+              <th>Stat</th>
+              <th>Base</th>
+              <th>Level</th>
+              <th>Items</th>
+              <th>Invest</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ALL_STAT_KEYS.map((key) => {
+              const row = stats.totals[key]
+              if (!row || row.total === 0) return null
+              const category = investmentCategoryFor(key)
+              const isPercentBonus =
+                category !== null && INVESTMENT[category].unit === 'percent' && key === 'maxHealth'
+              const investCell = isPercentBonus
+                ? stats.investment.vitality
+                  ? `×${(1 + stats.investment.vitality / 100).toFixed(2)}`
+                  : '—'
+                : row.fromInvestment
+                  ? `+${Math.round(row.fromInvestment * 10) / 10}`
+                  : '—'
+              return (
+                <tr key={key}>
+                  <td className="stat-name">{STAT_LABELS[key]}</td>
+                  <td>{row.base ? Math.round(row.base * 10) / 10 : '—'}</td>
+                  <td>{row.fromLevel ? `+${Math.round(row.fromLevel)}` : '—'}</td>
+                  <td>{row.fromItems ? `+${Math.round(row.fromItems * 10) / 10}` : '—'}</td>
+                  <td>{investCell}</td>
+                  <td className="stat-total">{formatStat(key, row.total)}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        <p className="mode-footnote">
+          Stacking was fitted against 119,630 real player records: health is
+          (base + level + items) × the vitality percentage, which lands within about 1 HP of
+          observed values. Weapon and spirit read slightly low because conditional and on-proc
+          item effects never enter the passive stat block — treat those two as a floor.
+        </p>
+      </div>
     </div>
   )
 }

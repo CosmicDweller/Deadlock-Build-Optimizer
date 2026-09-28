@@ -1,5 +1,5 @@
 import type { BuildResult, Item, ItemCategory, StatKey } from '../types'
-import { INVESTMENT_BONUSES, INVESTMENT_THRESHOLD } from '../data/investmentBonuses'
+import { INVESTMENT, investmentBonus } from '../data/investmentBonuses'
 
 // Real builds cap at 12 items TOTAL, shared across categories — match data
 // shows single-category counts as high as 9-10, so there's no meaningful
@@ -12,7 +12,6 @@ export const MAX_SLOTS = 12
 // slots x cost merge below cheap enough to rerun on every slider drag.
 const BUCKET_SIZE = 800
 const NEG = -Infinity
-const THRESHOLD_BUCKET = Math.ceil(INVESTMENT_THRESHOLD / BUCKET_SIZE)
 
 /**
  * Raw stat magnitudes aren't comparable (+250 max health vs +14% bullet
@@ -32,8 +31,12 @@ function computeStatScales(items: Item[]): Partial<Record<StatKey, number>> {
     }
   }
   for (const item of items) consider(item.stats)
-  for (const category of Object.keys(INVESTMENT_BONUSES) as ItemCategory[]) {
-    consider(INVESTMENT_BONUSES[category].stats)
+  // The top investment tier is a large bump in its own stat, so it belongs
+  // in the normalization range alongside the items.
+  for (const category of Object.keys(INVESTMENT) as ItemCategory[]) {
+    const spec = INVESTMENT[category]
+    const top = spec.tiers[spec.tiers.length - 1]
+    consider({ [spec.statKey]: top.cumulative })
   }
   return scales
 }
@@ -61,8 +64,12 @@ function weightedStatValue(
  */
 export interface ScoringModel {
   scoreItem(item: Item): number
-  /** Score for crossing a category's investment threshold; 0 disables it. */
-  categoryBonus(category: ItemCategory): number
+  /**
+   * Score for a category's investment bonus at a given spend. The bonus is
+   * a step function over 11 thresholds, so it has to be evaluated per spend
+   * level rather than as one cutoff.
+   */
+  categoryBonusAt(category: ItemCategory, souls: number): number
   /** Whether the investment bonus's stats count toward the build's totals. */
   appliesInvestmentBonus: boolean
 }
@@ -70,12 +77,28 @@ export interface ScoringModel {
 export function createStatScoring(
   allItems: Item[],
   weights: Partial<Record<StatKey, number>>,
+  /**
+   * Health the vitality percentage will apply to (hero base plus level).
+   * Vitality investment is a percentage, so it has to be converted into
+   * points against some reference to compare with flat item health. Item
+   * health is excluded here because the search can't know it yet, which
+   * makes this a slight underestimate of that category's value.
+   */
+  referenceHealth = 0,
 ): ScoringModel {
   const scales = computeStatScales(allItems)
   return {
     scoreItem: (item) => weightedStatValue(item.stats, weights, scales),
-    categoryBonus: (category) =>
-      weightedStatValue(INVESTMENT_BONUSES[category].stats, weights, scales),
+    categoryBonusAt: (category, souls) => {
+      const spec = INVESTMENT[category]
+      const bonus = investmentBonus(category, souls)
+      if (!bonus) return 0
+      const value =
+        spec.unit === 'percent' && spec.statKey === 'maxHealth'
+          ? (bonus / 100) * referenceHealth
+          : bonus
+      return weightedStatValue({ [spec.statKey]: value }, weights, scales)
+    },
     appliesInvestmentBonus: true,
   }
 }
@@ -99,7 +122,7 @@ function solveCategory(
   maxBucket: number,
   maxSlots: number,
   scoring: ScoringModel,
-  bonusScore: number,
+  category: ItemCategory,
 ): CategorySolution {
   const n = items.length
   const itemCost = items.map((it) => Math.ceil(it.cost / BUCKET_SIZE))
@@ -132,7 +155,7 @@ function solveCategory(
     row.map((value, c) => {
       if (value === NEG) return NEG
       if (k === 0) return value
-      return c >= THRESHOLD_BUCKET ? value + bonusScore : value
+      return value + scoring.categoryBonusAt(category, c * BUCKET_SIZE)
     }),
   )
 
@@ -205,16 +228,10 @@ export function optimizeBuild(
     spirit: allItems.filter((i) => i.category === 'spirit'),
   }
 
-  const bonusScoreByCategory: Record<ItemCategory, number> = {
-    weapon: scoring.categoryBonus('weapon'),
-    vitality: scoring.categoryBonus('vitality'),
-    spirit: scoring.categoryBonus('spirit'),
-  }
-
   const solutions: Record<ItemCategory, CategorySolution> = {
-    weapon: solveCategory(byCategory.weapon, maxBucket, maxSlots, scoring, bonusScoreByCategory.weapon),
-    vitality: solveCategory(byCategory.vitality, maxBucket, maxSlots, scoring, bonusScoreByCategory.vitality),
-    spirit: solveCategory(byCategory.spirit, maxBucket, maxSlots, scoring, bonusScoreByCategory.spirit),
+    weapon: solveCategory(byCategory.weapon, maxBucket, maxSlots, scoring, 'weapon'),
+    vitality: solveCategory(byCategory.vitality, maxBucket, maxSlots, scoring, 'vitality'),
+    spirit: solveCategory(byCategory.spirit, maxBucket, maxSlots, scoring, 'spirit'),
   }
 
   const merge12 = mergeTables(solutions.weapon.table, solutions.vitality.table, maxSlots, maxBucket)
@@ -265,21 +282,19 @@ export function optimizeBuild(
     }
   }
 
-  const categoryBonusActive: Record<ItemCategory, boolean> = {
-    weapon: categorySpend.weapon >= INVESTMENT_THRESHOLD,
-    vitality: categorySpend.vitality >= INVESTMENT_THRESHOLD,
-    spirit: categorySpend.spirit >= INVESTMENT_THRESHOLD,
+  // Investment bonuses are reported as their own figures rather than folded
+  // into totalStats: vitality's is a percentage of total health, so it can't
+  // be summed with flat item health. computeBuildStats (lib/statTotals.ts)
+  // is what turns all of this into resulting values for a hero and level.
+  const categoryInvestment: Record<ItemCategory, number> = {
+    weapon: investmentBonus('weapon', categorySpend.weapon),
+    vitality: investmentBonus('vitality', categorySpend.vitality),
+    spirit: investmentBonus('spirit', categorySpend.spirit),
   }
 
   if (scoring.appliesInvestmentBonus) {
-    for (const category of Object.keys(categoryBonusActive) as ItemCategory[]) {
-      if (!categoryBonusActive[category]) continue
-      score += bonusScoreByCategory[category]
-      const bonusStats = INVESTMENT_BONUSES[category].stats
-      for (const key in bonusStats) {
-        const statKey = key as StatKey
-        totalStats[statKey] = (totalStats[statKey] ?? 0) + (bonusStats[statKey] ?? 0)
-      }
+    for (const category of Object.keys(categoryInvestment) as ItemCategory[]) {
+      score += scoring.categoryBonusAt(category, categorySpend[category])
     }
   }
 
@@ -295,7 +310,7 @@ export function optimizeBuild(
     score,
     slotsUsed,
     categorySpend,
-    categoryBonusActive,
+    categoryInvestment,
     investmentBonusApplied: scoring.appliesInvestmentBonus,
   }
 }

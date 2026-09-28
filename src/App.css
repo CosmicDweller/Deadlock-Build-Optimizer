@@ -29,6 +29,9 @@
 .hero-picker {
   grid-column: 1;
 }
+.mid-column {
+  grid-column: 2;
+}
 .build-output {
   grid-column: 3;
 }
@@ -168,7 +171,6 @@
 }
 
 .mid-column {
-  grid-column: 2;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -568,6 +570,57 @@
   text-transform: uppercase;
   letter-spacing: 0.6px;
   color: var(--text-dim);
+}
+
+.totals-level {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--text-dim);
+  opacity: 0.8;
+}
+
+.stat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-table th {
+  text-align: right;
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  padding: 0 0 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-table th:first-child,
+.stat-table td.stat-name {
+  text-align: left;
+}
+
+.stat-table td {
+  text-align: right;
+  padding: 5px 0;
+  color: var(--text-dim);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.stat-table td.stat-name {
+  color: var(--text);
+}
+
+.stat-table td.stat-total {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stat-table tr:last-child td {
+  border-bottom: none;
 }
 
 .totals-grid {
