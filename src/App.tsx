@@ -7,7 +7,7 @@ import {
   createLearnedScoring,
 } from './lib/learnedScoring'
 import type { ObjectiveWeights } from './lib/learnedScoring'
-import { DEFAULT_HERO_LEVEL } from './lib/statTotals'
+import { levelForSouls } from './lib/heroMeta'
 import type { Hero, ScoringMode, StatKey } from './types'
 import { HeroPicker } from './components/HeroPicker'
 import { StatWeightPanel } from './components/StatWeightPanel'
@@ -25,7 +25,9 @@ function App() {
   const [objectives, setObjectives] = useState<ObjectiveWeights>({})
   const [metaWeight, setMetaWeight] = useState(DEFAULT_META_WEIGHT)
   const [budget, setBudget] = useState(DEFAULT_BUDGET)
-  const [level, setLevel] = useState(DEFAULT_HERO_LEVEL)
+  // Level normally tracks the soul budget, since both come from farming.
+  // A manual pick wins until it's cleared.
+  const [levelOverride, setLevelOverride] = useState<number | null>(null)
 
   function handleSelectHero(hero: Hero) {
     setSelectedHero(hero)
@@ -42,11 +44,14 @@ function App() {
   }
 
   function handleReset() {
+    setLevelOverride(null)
     if (!selectedHero) return
     setWeights(selectedHero.defaultWeights)
     setObjectives(DEFAULT_OBJECTIVES_BY_ARCHETYPE[selectedHero.archetype])
     setMetaWeight(DEFAULT_META_WEIGHT)
   }
+
+  const level = levelOverride ?? levelForSouls(budget)
 
   const result = useMemo(() => {
     if (!selectedHero) return null
@@ -89,7 +94,9 @@ function App() {
               budget={budget}
               onBudgetChange={setBudget}
               level={level}
-              onLevelChange={setLevel}
+              onLevelChange={setLevelOverride}
+              levelIsAuto={levelOverride === null}
+              onLevelAuto={() => setLevelOverride(null)}
             />
             <HeroMetaPanel hero={selectedHero} />
           </div>

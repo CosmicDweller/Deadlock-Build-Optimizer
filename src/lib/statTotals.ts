@@ -30,8 +30,6 @@ import { INVESTMENT, investmentBonus } from '../data/investmentBonuses'
 
 export const MIN_HERO_LEVEL = 1
 export const MAX_HERO_LEVEL = 36
-/** Median observed level in the match data; a typical finished game. */
-export const DEFAULT_HERO_LEVEL = 33
 
 export interface StatTotal {
   key: StatKey

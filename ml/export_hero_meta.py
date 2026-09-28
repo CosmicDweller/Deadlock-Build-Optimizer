@@ -35,6 +35,51 @@ OUT_PATH = Path(__file__).resolve().parent.parent / "src" / "data" / "heroMeta.j
 
 SMOOTHING = 2.0
 SCORE_CUTOFF = 0.05
+# Levels seen fewer times than this are too thin to take a median from —
+# games rarely end at low level, so those samples are early-surrender noise.
+MIN_LEVEL_SAMPLES = 30
+MAX_HERO_LEVEL = 36
+
+
+def level_by_net_worth(df) -> list[dict]:
+    """Souls at which a player typically reaches each hero level.
+
+    Hero levels cost souls, but on a different accounting scale than item
+    purchases: reaching level 33 wants 418,700 by the game's own
+    required_gold curve, while players finish games near 40,000 net worth.
+    The ratio between the two drifts from 5.9 to 10.7 across the level
+    range, so the game curve can't just be rescaled — this uses observed
+    medians instead, which is what "a player with this much gold" actually
+    looks like.
+
+    Below the reliable range the curve is interpolated down to (level 1,
+    0 souls), since games almost never end early enough to measure it.
+    """
+    grouped = df.groupby("player_level")["net_worth"].agg(["size", "median"])
+    reliable = [
+        (int(level), float(row["median"]))
+        for level, row in grouped.iterrows()
+        if row["size"] >= MIN_LEVEL_SAMPLES and 1 < level <= MAX_HERO_LEVEL
+    ]
+    if not reliable:
+        return []
+    reliable.sort()
+
+    lowest_level, lowest_souls = reliable[0]
+    curve = {1: 0.0}
+    for level in range(2, lowest_level):
+        curve[level] = lowest_souls * (level - 1) / (lowest_level - 1)
+    for level, souls in reliable:
+        curve[level] = souls
+
+    # Keep it monotonic so inverting it can't hand back a lower level for
+    # more souls.
+    out = []
+    running = 0.0
+    for level in sorted(curve):
+        running = max(running, curve[level])
+        out.append({"level": level, "souls": int(round(running))})
+    return out
 
 
 def main() -> None:
@@ -135,6 +180,7 @@ def main() -> None:
         "nMatches": int(df["match_id"].nunique()),
         "heroGames": {slug_of[h]: int(n) for h, n in
                       df.groupby("hero_id").size().items() if h in slug_of},
+        "levelByNetWorth": level_by_net_worth(df),
         "affinity": affinity_out,
         "archetypes": archetypes_out,
         "metaScore": meta_score,
@@ -147,6 +193,7 @@ def main() -> None:
     print(f"  affinity tables: {len(affinity_out)} heroes")
     print(f"  archetypes (well-separated only): {len(archetypes_out)} heroes")
     print(f"  meta scores: {n_scores:,} hero/item pairs")
+    print(f"  level curve: {len(payload['levelByNetWorth'])} levels")
 
 
 if __name__ == "__main__":

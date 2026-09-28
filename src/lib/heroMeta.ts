@@ -37,10 +37,17 @@ export interface HeroArchetypes {
   clusters: ArchetypeCluster[]
 }
 
+export interface LevelPoint {
+  level: number
+  /** Net worth at which players typically reach this level. */
+  souls: number
+}
+
 interface HeroMetaFile {
   generated: string
   nMatches: number
   heroGames: Record<string, number>
+  levelByNetWorth: LevelPoint[]
   affinity: Record<string, AffinityEntry[]>
   /** Only heroes whose builds actually separate into distinct clusters. */
   archetypes: Record<string, HeroArchetypes>
@@ -63,6 +70,26 @@ export function archetypesFor(heroId: string | null): HeroArchetypes | null {
 export function heroGames(heroId: string | null): number {
   if (!heroId) return 0
   return HERO_META.heroGames[heroId] ?? 0
+}
+
+/**
+ * The hero level a player with this much net worth typically has.
+ *
+ * Derived from observed medians in the match data rather than the game's
+ * own required_gold curve: levels are paid for on a different accounting
+ * scale (418,700 souls for level 33, against a ~40,000 net worth at that
+ * level), and the ratio between the two drifts across the range, so the
+ * cost curve can't simply be rescaled.
+ */
+export function levelForSouls(souls: number): number {
+  const curve = HERO_META.levelByNetWorth
+  if (!curve.length) return 1
+  let level = curve[0].level
+  for (const point of curve) {
+    if (souls >= point.souls) level = point.level
+    else break
+  }
+  return level
 }
 
 export function metaScore(heroId: string | null, itemId: string): number {

@@ -18,6 +18,8 @@ interface Props {
   onBudgetChange: (value: number) => void
   level: number
   onLevelChange: (value: number) => void
+  levelIsAuto: boolean
+  onLevelAuto: () => void
 }
 
 export function StatWeightPanel({
@@ -34,6 +36,8 @@ export function StatWeightPanel({
   onBudgetChange,
   level,
   onLevelChange,
+  levelIsAuto,
+  onLevelAuto,
 }: Props) {
   return (
     <div className="panel stat-panel">
@@ -95,7 +99,16 @@ export function StatWeightPanel({
       </div>
 
       <div className="budget-row">
-        <label htmlFor="hero-level">Hero Level</label>
+        <label htmlFor="hero-level">
+          Hero Level
+          {levelIsAuto ? (
+            <span className="r2-badge meta">auto</span>
+          ) : (
+            <button type="button" className="link-button level-auto" onClick={onLevelAuto}>
+              auto
+            </button>
+          )}
+        </label>
         <input
           id="hero-level"
           type="range"
