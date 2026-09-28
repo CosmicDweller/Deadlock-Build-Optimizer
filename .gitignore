@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+*.tsbuildinfo
+
+# Raw Deadlock API exports: large (the match dump alone is ~117MB, over
+# GitHub's 100MB per-file limit) and re-fetchable from the Deadlock API.
+data/raw/
+ml/cache/
+ml/.venv/
+ml/models/*.joblib
+__pycache__/
+*.pyc
