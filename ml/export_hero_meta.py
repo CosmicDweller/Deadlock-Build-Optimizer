@@ -7,15 +7,25 @@ Writes src/data/heroMeta.json. Two things travel across:
 
   * `affinity` — the display table: what this hero buys unusually often,
     with sample sizes and win rates so the UI can show the evidence.
-  * `metaScore` — an optimizer input: smoothed log pick-rate lift for
-    EVERY hero/item pair, z-normalized so it lands on the same scale as
-    the learned performance coefficients and can be blended with them.
+  * `metaScore` — an optimizer input: how often this hero actually builds
+    each item, as the log-odds of its smoothed pick rate, z-normalized so
+    it lands on the same scale as the learned performance coefficients.
 
-The score is smoothed (add-alpha) because items a hero never buys have a
-lift of zero and an undefined log. Smoothing turns those into a finite
-penalty whose size depends on how much *other* heroes buy the item —
-being the only hero who skips a popular item is a stronger signal than
-skipping something nobody takes.
+`metaScore` deliberately measures the hero's OWN pick rate rather than its
+lift over other heroes, even though the affinity table above reports lift.
+The two answer different questions and only one belongs in the optimizer.
+
+Lift asks "what is distinctive about this hero", which is the right thing
+to display. It is the wrong thing to build with: an item Wraith takes 7% of
+the time and nobody else touches outscores one Wraith takes 84% of the
+time, which is not what "follow the meta" should mean. Worse, add-alpha
+smoothing gives never-bought items a spuriously POSITIVE lift, because a
+single hero has far fewer games than the pooled rest, so the smoothed
+numerator exceeds the smoothed denominator. Under lift, every hero's
+highest-scoring items were the tier 5s that nobody buys at all.
+
+Log-odds of the hero's own pick rate has neither problem: commonly built
+items score high, never-built ones land strongly negative.
 """
 from __future__ import annotations
 
@@ -95,13 +105,6 @@ def main() -> None:
     heroes = load_heroes()
     slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
 
-    # Global purchase counts, used as each item's "everyone else" baseline.
-    total_rows = len(df)
-    global_counts: Counter = Counter()
-    for build in df["items"]:
-        for item_id in set(build):
-            global_counts[item_id] += 1
-
     raw_scores: dict[tuple[str, str], float] = {}
     affinity_out: dict[str, list] = {}
     archetypes_out: dict[str, dict] = {}
@@ -117,14 +120,11 @@ def main() -> None:
             for item_id in set(build):
                 hero_counts[item_id] += 1
 
-        others_n = total_rows - len(mine)
         for item_id, item in items.items():
-            other_count = global_counts.get(item_id, 0) - hero_counts.get(item_id, 0)
             hero_rate = (hero_counts.get(item_id, 0) + SMOOTHING) / (len(mine) + 2 * SMOOTHING)
-            other_rate = (other_count + SMOOTHING) / (others_n + 2 * SMOOTHING)
-            if other_rate <= 0:
-                continue
-            raw_scores[(slug, item.class_name)] = math.log(hero_rate / other_rate)
+            # Log-odds of this hero's own pick rate. Smoothing only keeps
+            # the log finite for items at 0% or 100%.
+            raw_scores[(slug, item.class_name)] = math.log(hero_rate / (1 - hero_rate))
 
         table = hero_item_affinity(df, hero_id, min_games=args.min_games)
         if len(table):
