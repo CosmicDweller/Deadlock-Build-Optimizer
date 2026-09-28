@@ -56,6 +56,11 @@ MIN_CURVE_SAMPLES = 2000
 # Minute marks the progression view plans around: laning, mid, late.
 PHASE_MINUTES = [10, 22, 36]
 MIN_PHASE_SAMPLES = 100
+# Counter-pick thresholds. Pooled across the buying hero, so samples are
+# large; these filters keep the list to picks worth acting on.
+COUNTER_MIN_GAMES = 400
+COUNTER_MIN_LIFT = 1.2
+COUNTER_MIN_RATE = 0.03
 
 
 def level_by_net_worth(df) -> list[dict]:
@@ -234,6 +239,89 @@ def phase_pick_rates(matches_path=None) -> dict:
     return out
 
 
+def counter_picks(matches_path=None) -> dict:
+    """How much more often an item is bought when a given hero is on the
+    enemy team.
+
+    Counter-picking is the one axis nothing else here captures: whether an
+    item is worth buying often depends on who you are playing against, not
+    just who you are playing. Metal Skin is taken in 7.4% of games against
+    Haze and 1.7% otherwise.
+
+    Pooled across the buying hero rather than split by it. "Metal Skin
+    answers Haze" is advice for everyone, and pooling turns a few hundred
+    games per pairing into tens of thousands. The cost is that a counter
+    which only matters for one hero gets averaged away.
+
+    Like every pick-rate signal here this measures belief, not proof: it
+    reports what players think counters what, and will reproduce a
+    consensus that happens to be wrong.
+    """
+    from deadlock_ml.catalog import load_items as _load_items, load_heroes as _load_heroes
+    from deadlock_ml.dataset import iter_matches
+
+    shop = _load_items()
+    heroes = _load_heroes()
+    slug_of = {h.hero_id: h.class_name.removeprefix("hero_") for h in heroes.values()}
+
+    bought_with: Counter = Counter()
+    bought_without: Counter = Counter()
+    games_with: Counter = Counter()
+    games_without: Counter = Counter()
+
+    for match in iter_matches() if matches_path is None else iter_matches(matches_path):
+        if match.get("not_scored"):
+            continue
+        by_team: dict = defaultdict(list)
+        for player in match["players"]:
+            by_team[player["team"]].append(player)
+
+        for team, players in by_team.items():
+            enemies = {
+                q["hero_id"] for other, qs in by_team.items() if other != team for q in qs
+            }
+            enemies &= set(slug_of)
+            for player in players:
+                if player.get("abandon_match_time_s"):
+                    continue
+                owned = {
+                    e["item_id"] for e in (player.get("items") or [])
+                    if e["item_id"] in shop and not e.get("sold_time_s")
+                }
+                for enemy_id in slug_of:
+                    present = enemy_id in enemies
+                    if present:
+                        games_with[enemy_id] += 1
+                    else:
+                        games_without[enemy_id] += 1
+                    for item_id in owned:
+                        if present:
+                            bought_with[(enemy_id, item_id)] += 1
+                        else:
+                            bought_without[(enemy_id, item_id)] += 1
+
+    out: dict = {}
+    for (enemy_id, item_id), count in bought_with.items():
+        n_with = games_with[enemy_id]
+        n_without = games_without[enemy_id]
+        if n_with < COUNTER_MIN_GAMES or n_without < COUNTER_MIN_GAMES:
+            continue
+        rate_with = count / n_with
+        rate_without = bought_without.get((enemy_id, item_id), 0) / n_without
+        if rate_with < COUNTER_MIN_RATE or rate_without <= 0:
+            continue
+        lift = rate_with / rate_without
+        if lift < COUNTER_MIN_LIFT:
+            continue
+        out.setdefault(slug_of[enemy_id], {})[shop[item_id].class_name] = {
+            "lift": round(lift, 2),
+            "with": round(rate_with, 3),
+            "without": round(rate_without, 3),
+            "games": n_with,
+        }
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--min-games", type=int, default=10,
@@ -325,6 +413,7 @@ def main() -> None:
         "levelByNetWorth": level_by_net_worth(df),
         "soulCurve": soul_curve(),
         "phaseMeta": phase_pick_rates(),
+        "counterPicks": counter_picks(),
         "affinity": affinity_out,
         "archetypes": archetypes_out,
         "metaScore": meta_score,
@@ -341,6 +430,8 @@ def main() -> None:
     print(f"  soul curve: {len(payload['soulCurve'])} minute marks")
     n_phase = sum(len(i) for m in payload["phaseMeta"].values() for i in m.values())
     print(f"  phase meta: {n_phase:,} entries over {len(payload['phaseMeta'])} phases")
+    n_ctr = sum(len(v) for v in payload["counterPicks"].values())
+    print(f"  counter picks: {n_ctr:,} pairings over {len(payload['counterPicks'])} enemies")
 
 
 if __name__ == "__main__":

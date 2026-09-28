@@ -578,6 +578,71 @@
   color: var(--text-dim);
 }
 
+.enemy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  gap: 6px;
+}
+
+.enemy-chip {
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-panel-alt);
+  line-height: 0;
+  overflow: hidden;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.enemy-chip:hover:not(:disabled) {
+  opacity: 0.9;
+  border-color: var(--accent-dim);
+}
+
+.enemy-chip.selected {
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+.enemy-chip:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.enemy-icon {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.situational {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.situational h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+}
+
+.situational-item {
+  gap: 10px;
+}
+
+.situational-against {
+  flex: none;
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
 .build-view-toggle {
   margin-bottom: 0;
   flex: 0 0 auto;

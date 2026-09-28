@@ -37,6 +37,14 @@ export interface HeroArchetypes {
   clusters: ArchetypeCluster[]
 }
 
+export interface CounterPick {
+  /** How many times more often the item is bought against this hero. */
+  lift: number
+  with: number
+  without: number
+  games: number
+}
+
 export interface SoulCurvePoint {
   minute: number
   /** Median cumulative item spend by this minute. */
@@ -60,6 +68,8 @@ interface HeroMetaFile {
   soulCurve: SoulCurvePoint[]
   /** phase minute -> hero -> item -> z-scored log-odds of being held then. */
   phaseMeta: Record<string, Record<string, Record<string, number>>>
+  /** enemy hero -> item -> how much more it's bought against them. */
+  counterPicks: Record<string, Record<string, CounterPick>>
   affinity: Record<string, AffinityEntry[]>
   /** Only heroes whose builds actually separate into distinct clusters. */
   archetypes: Record<string, HeroArchetypes>
@@ -128,4 +138,47 @@ export function phaseMetaScore(
 export function metaScore(heroId: string | null, itemId: string): number {
   if (!heroId) return 0
   return HERO_META.metaScore[heroId]?.[itemId] ?? 0
+}
+
+
+export interface CounterSuggestion {
+  itemId: string
+  /** Strongest lift across the selected enemies, and who drives it. */
+  lift: number
+  against: { heroId: string; lift: number; with: number; without: number }[]
+}
+
+/**
+ * Items bought disproportionately often against a given enemy lineup.
+ *
+ * Pooled across the buying hero, so this is "what people take against
+ * Haze" rather than "what Wraith takes against Haze" — counter-picks are
+ * mostly universal, and pooling turns hundreds of games per pairing into
+ * tens of thousands. It measures belief rather than proof: it reports what
+ * players think answers a hero.
+ */
+export function counterSuggestions(enemyIds: string[]): CounterSuggestion[] {
+  const merged = new Map<string, CounterSuggestion>()
+  for (const heroId of enemyIds) {
+    const picks = HERO_META.counterPicks?.[heroId]
+    if (!picks) continue
+    for (const [itemId, pick] of Object.entries(picks)) {
+      const existing = merged.get(itemId)
+      const entry = {
+        heroId,
+        lift: pick.lift,
+        with: pick.with,
+        without: pick.without,
+      }
+      if (existing) {
+        existing.against.push(entry)
+        existing.lift = Math.max(existing.lift, pick.lift)
+      } else {
+        merged.set(itemId, { itemId, lift: pick.lift, against: [entry] })
+      }
+    }
+  }
+  const out = [...merged.values()]
+  for (const entry of out) entry.against.sort((a, b) => b.lift - a.lift)
+  return out.sort((a, b) => b.lift - a.lift)
 }

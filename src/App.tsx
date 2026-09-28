@@ -15,6 +15,7 @@ import { BuildOutput } from './components/BuildOutput'
 import type { BuildView } from './components/BuildOutput'
 import { buildProgression } from './lib/progression'
 import { HeroMetaPanel } from './components/HeroMetaPanel'
+import { EnemyTeamPicker, MAX_ENEMIES } from './components/EnemyTeamPicker'
 import './App.css'
 
 // Median cumulative item spend at minute 36, which is also about when
@@ -33,11 +34,22 @@ function App() {
   // A manual pick wins until it's cleared.
   const [levelOverride, setLevelOverride] = useState<number | null>(null)
   const [view, setView] = useState<BuildView>('progression')
+  const [enemyIds, setEnemyIds] = useState<string[]>([])
 
   function handleSelectHero(hero: Hero) {
     setSelectedHero(hero)
     setWeights(hero.defaultWeights)
     setObjectives(DEFAULT_OBJECTIVES_BY_ARCHETYPE[hero.archetype])
+  }
+
+  function handleToggleEnemy(heroId: string) {
+    setEnemyIds((prev) =>
+      prev.includes(heroId)
+        ? prev.filter((id) => id !== heroId)
+        : prev.length >= MAX_ENEMIES
+          ? prev
+          : [...prev, heroId],
+    )
   }
 
   function handleWeightChange(key: StatKey, value: number) {
@@ -115,6 +127,12 @@ function App() {
               onLevelAuto={() => setLevelOverride(null)}
             />
             <HeroMetaPanel hero={selectedHero} />
+            <EnemyTeamPicker
+              heroes={HEROES}
+              selected={enemyIds}
+              onToggle={handleToggleEnemy}
+              onClear={() => setEnemyIds([])}
+            />
           </div>
         )}
 
@@ -130,6 +148,8 @@ function App() {
           progression={progression}
           view={view}
           onViewChange={setView}
+          heroes={HEROES}
+          enemyIds={enemyIds}
         />
       </main>
 

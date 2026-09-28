@@ -1,3 +1,4 @@
+import { ITEMS } from '../data/items'
 import type { BuildResult, Hero, ItemCategory, ScoringMode, StatKey } from '../types'
 import { CATEGORY_LABELS, STAT_LABELS, STAT_UNITS, ALL_STAT_KEYS } from '../types'
 import { INVESTMENT, nextInvestmentTier } from '../data/investmentBonuses'
@@ -7,6 +8,7 @@ import { learnedItemBreakdown, learnedItemValue } from '../lib/learnedScoring'
 import type { ObjectiveWeights } from '../lib/learnedScoring'
 import { GameIcon } from './GameIcon'
 import { ProgressionView } from './ProgressionView'
+import { SituationalItems } from './SituationalItems'
 import type { Progression } from '../lib/progression'
 
 interface Props {
@@ -21,6 +23,8 @@ interface Props {
   progression: Progression | null
   view: BuildView
   onViewChange: (view: BuildView) => void
+  heroes: Hero[]
+  enemyIds: string[]
 }
 
 export type BuildView = 'final' | 'progression'
@@ -44,6 +48,8 @@ export function BuildOutput({
   progression,
   view,
   onViewChange,
+  heroes,
+  enemyIds,
 }: Props) {
   if (!result || !hero) {
     return (
@@ -205,6 +211,13 @@ export function BuildOutput({
           </div>
         )
       })}
+
+      <SituationalItems
+        items={ITEMS}
+        heroes={heroes}
+        enemyIds={enemyIds}
+        inBuild={new Set(result.chosenItems.map((i) => i.id))}
+      />
 
       <div className="totals-block">
         <h3>
