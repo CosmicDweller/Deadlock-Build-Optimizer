@@ -772,6 +772,13 @@
   overflow-wrap: anywhere;
 }
 
+.phase-via {
+  margin-left: 6px;
+  font-size: 10px;
+  color: var(--vitality);
+  opacity: 0.85;
+}
+
 .phase-new {
   margin-left: 6px;
   font-size: 9px;

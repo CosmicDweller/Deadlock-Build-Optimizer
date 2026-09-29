@@ -57,6 +57,13 @@ export interface PhaseItem {
   upgradesInto?: Item
   /** True when it first appears in this phase. */
   isNew: boolean
+  /**
+   * Components bought and consumed within this phase to reach this item.
+   * Carried on the parent rather than listed separately: they are no
+   * longer held, so a row of their own would imply you own both and
+   * inflate the phase's item count.
+   */
+  builtFrom?: Item[]
 }
 
 export interface BuildPhase {
@@ -186,12 +193,16 @@ export function buildProgression(
     const nextIds = next ? new Set(next.map((i) => i.id)) : null
     const nextUpgrades = next ? componentIds(next) : null
 
-    const intraPhase: PhaseItem[] = (consumedByPhase[index] ?? []).map(({ item, target }) => ({
-      item,
-      fate: 'upgrades' as const,
-      upgradesInto: target,
-      isNew: !previous.has(item.id),
-    }))
+    // Components bought and consumed inside this phase, grouped under the
+    // item they became. A component carried in from an earlier phase is
+    // skipped: that phase already lists it with its upgrade target.
+    const builtFrom = new Map<string, Item[]>()
+    for (const { item, target } of consumedByPhase[index] ?? []) {
+      if (previous.has(item.id)) continue
+      const list = builtFrom.get(target.id) ?? []
+      list.push(item)
+      builtFrom.set(target.id, list)
+    }
 
     const phaseItems: PhaseItem[] = items.map((item) => {
       let fate: ItemFate = 'keeps'
@@ -205,7 +216,13 @@ export function buildProgression(
           fate = 'sold'
         }
       }
-      return { item, fate, upgradesInto, isNew: !previous.has(item.id) }
+      return {
+        item,
+        fate,
+        upgradesInto,
+        isNew: !previous.has(item.id),
+        builtFrom: builtFrom.get(item.id),
+      }
     })
 
     // An item bought and later sold is spend that buys nothing lasting;
@@ -214,11 +231,10 @@ export function buildProgression(
       if (entry.fate === 'sold' && entry.isNew) wastedSouls += entry.item.cost
     }
 
-    const allEntries = [...phaseItems, ...intraPhase]
     const carried = phaseItems.reduce((sum, e) => sum + e.item.cost, 0)
     return {
       spec: PHASES[index],
-      items: allEntries.sort((a, b) => b.item.cost - a.item.cost),
+      items: phaseItems.sort((a, b) => b.item.cost - a.item.cost),
       spent: carried,
       budget: budgets[index],
     }
@@ -298,19 +314,47 @@ function walkSoulCurve(
       // Keep buying while this step's souls still cover something useful.
       for (;;) {
         const ownedIds = new Set(owned.map((o) => o.id))
+        const legal = (item: Item) =>
+          !ownedIds.has(item.id) && !wouldDowngrade(item, owned, byId)
+
         let best: { item: Item; cost: number; score: number } | null = null
+        // The best item regardless of price — what you're saving toward.
+        let aspiration: Item | null = null
+        let aspirationScore = 0
         for (const item of allItems) {
-          if (ownedIds.has(item.id)) continue
-          if (wouldDowngrade(item, owned, byId)) continue
+          if (!legal(item)) continue
           const consumed = consumedBy(item, owned, byId)
           const cost = item.cost - consumed.reduce((sum, c) => sum + c.cost, 0)
           if (cost <= 0) continue
-          if (spent + cost > available) continue
           if (owned.length - consumed.length >= slotCap) continue
           const score = stop.scoring.scoreItem(item)
           if (score <= 0) continue
+          if (score > aspirationScore) {
+            aspiration = item
+            aspirationScore = score
+          }
+          if (spent + cost > available) continue
           if (!best || score > best.score) best = { item, cost, score }
         }
+
+        // If what you actually want is out of reach, buy its component and
+        // upgrade later rather than banking souls or settling for an
+        // unrelated item. That is what players do: 77.7% of parents are
+        // reached through a component rather than bought outright.
+        if (aspiration && (!best || best.item.id !== aspiration.id)) {
+          const stepping = (aspiration.components ?? [])
+            .map((id) => byId.get(id))
+            .filter((c): c is Item => !!c && legal(c))
+            .map((c) => ({
+              item: c,
+              cost: c.cost - consumedBy(c, owned, byId).reduce((sum, x) => sum + x.cost, 0),
+              score: stop.scoring.scoreItem(c),
+            }))
+            .filter((c) => c.cost > 0 && spent + c.cost <= available)
+            .sort((a, b) => b.score - a.score)[0]
+          if (stepping) best = stepping
+        }
+
         if (!best) break
         // Upgrading swallows the components it was built from. Those are
         // recorded rather than dropped: a tier 1 bought at minute 6 and

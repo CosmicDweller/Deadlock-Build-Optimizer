@@ -33,12 +33,17 @@ export function ProgressionView({ progression, heroName }: Props) {
           </div>
 
           <ul className="item-list">
-            {phase.items.map(({ item, fate, upgradesInto, isNew }) => (
+            {phase.items.map(({ item, fate, upgradesInto, isNew, builtFrom }) => (
               <li className={`phase-item${isNew ? ' new' : ''}`} key={item.id}>
                 <GameIcon className="phase-icon" src={item.image} alt="" />
                 <span className="phase-item-name">
                   {item.name}
                   {isNew && <span className="phase-new">new</span>}
+                  {builtFrom && (
+                    <span className="phase-via">
+                      via {builtFrom.map((c) => c.name).join(' + ')}
+                    </span>
+                  )}
                 </span>
                 {fate !== 'keeps' && (
                   <span className={`phase-fate fate-${fate}`}>
